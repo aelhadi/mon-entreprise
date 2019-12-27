@@ -15,10 +15,15 @@ let Conditions = ({
 	'non applicable si': notApplicable
 }) => {
 	let listElements = [
-		...parentDependencies.map(parentDependency =>
-		parentDependency.nodeValue === false && (
-			<ShowIfDisabled dependency={parentDependency} key="parent dependency" />
-		)),
+		...parentDependencies.map(
+			parentDependency =>
+				parentDependency.nodeValue === false && (
+					<ShowIfDisabled
+						dependency={parentDependency}
+						key="parent dependency"
+					/>
+				)
+		),
 		...disabledBy?.explanation?.isDisabledBy?.map(
 			(dependency, i) =>
 				dependency?.nodeValue === true && (
@@ -58,7 +63,8 @@ export default function Algorithm({ rule, showValues }) {
 			formula &&
 			!!Object.keys(formula).length &&
 			!path(['formule', 'explanation', 'une possibilité'], rule) &&
-			formula.explanation?.category !== 'number'
+			formula.explanation?.category !== 'number' &&
+			!!formula.explanation?.explanation
 
 	return (
 		<div id="algorithm">

@@ -216,6 +216,20 @@ function areSameClass(a: string, b: string) {
 	)
 }
 
+export function unitCompatibleWithDenominator(
+	unit: Unit,
+	denominator: string
+): Unit | null {
+	const filteredDenominators = unit.denominators.filter(
+		x => !areSameClass(x, denominator)
+	)
+	if (filteredDenominators.length === unit.denominators.length) {
+		return null
+	} else {
+		return { ...unit, denominators: [...filteredDenominators, denominator] }
+	}
+}
+
 function round(value: number) {
 	return +value.toFixed(16)
 }

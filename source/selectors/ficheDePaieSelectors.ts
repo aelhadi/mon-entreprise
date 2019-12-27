@@ -23,7 +23,7 @@ export const BLANK_COTISATION: Cotisation = {
 		partPatronale: 0,
 		partSalariale: 0
 	},
-	unit: 'ERROR_SHOULD_BE_INSTANCIATED',
+	unit: 'ERROR_SHOULD_BE_INSTANCIATED' as any,
 	dottedName: 'ERROR_SHOULD_BE_INSTANCIATED' as any,
 	title: 'ERROR_SHOULD_BE_INSTANCIATED',
 	branche: 'protection sociale . autres'

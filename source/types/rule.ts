@@ -1,3 +1,4 @@
+import { Unit } from 'Engine/units.js'
 import jsonRules from './dottednames.json'
 export type DottedName = keyof typeof jsonRules
 
@@ -5,7 +6,8 @@ export type Rule = {
 	dottedName: DottedName
 	question?: string
 	unité: string
-	unit: string
+	unit: Unit
+	defaultUnit: Unit
 	name?: string
 	title?: string
 	defaultValue: any

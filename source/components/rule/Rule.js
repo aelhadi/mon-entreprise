@@ -3,6 +3,7 @@ import { ThemeColorsContext } from 'Components/utils/colors'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
 import Value from 'Components/Value'
 import knownMecanisms from 'Engine/known-mecanisms.yaml'
+import { nodeView } from 'Engine/nodeUnits'
 import {
 	encodeRuleName,
 	findRuleByDottedName,
@@ -134,7 +135,7 @@ export default AttachDictionary(knownMecanisms)(function Rule({ dottedName }) {
 								`}
 							>
 								<Value
-									{...displayedRule}
+									{...nodeView({ duration: 1, unit: 'mois' }, displayedRule)}
 									nilValueSymbol={displayedRule.parentDependencies.some(
 										parent => parent?.nodeValue == false
 									)}

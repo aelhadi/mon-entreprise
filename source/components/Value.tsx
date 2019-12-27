@@ -1,5 +1,7 @@
 import { T } from 'Components'
 import { formatValue, formatValueOptions } from 'Engine/format'
+import { nodeView } from 'Engine/nodeUnits'
+import { Unit } from 'Engine/units'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { EvaluatedRule } from 'Types/rule'
@@ -18,21 +20,22 @@ let style = customStyle => `
 `
 
 export type ValueProps = Partial<
-	Pick<EvaluatedRule, 'nodeValue' | 'unit'> &
-		Pick<
-			formatValueOptions,
-			'maximumFractionDigits' | 'minimumFractionDigits'
-		> & {
-			nilValueSymbol: string
-			children: number
-			negative: boolean
-			customCSS: string
-		}
+	Pick<
+		formatValueOptions,
+		'maximumFractionDigits' | 'minimumFractionDigits'
+	> & {
+		nodeValue: EvaluatedRule['nodeValue']
+		unit: Unit | string
+		nilValueSymbol: string
+		children: number
+		negative: boolean
+		customCSS: string
+	}
 >
 
 export default function Value({
 	nodeValue: value,
-	unit,
+	unit: providedUnit,
 	nilValueSymbol,
 	maximumFractionDigits,
 	minimumFractionDigits,
@@ -43,7 +46,11 @@ export default function Value({
 	const { language } = useTranslation().i18n
 
 	/* Either an entire rule object is passed, or just the right attributes and the value as a JSX  child*/
-	let nodeValue = value === undefined ? children : value
+	let providedValue = value === undefined ? children : value
+	let { nodeValue, unit } = nodeView(
+		{ duration: 1, unit: 'mois' },
+		{ nodeValue: providedValue, unit: providedUnit as any }
+	)
 
 	if (
 		(nilValueSymbol !== undefined && nodeValue === 0) ||

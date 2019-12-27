@@ -1,11 +1,15 @@
+import { EvaluatedRule } from 'Types/rule'
 import {
 	areUnitConvertible,
 	convertUnit,
 	simplifyUnitWithValue,
-	Unit
+	Unit,
+	unitCompatibleWithDenominator
 } from './units'
 
-export function simplifyNodeUnit(node) {
+type Node = Pick<EvaluatedRule, 'unit' | 'nodeValue'>
+
+export function simplifyNodeUnit(node: Node) {
 	if (!node.unit || !node.nodeValue) {
 		return node
 	}
@@ -16,7 +20,7 @@ export function simplifyNodeUnit(node) {
 		nodeValue
 	}
 }
-export const getNodeDefaultUnit = (node, cache) => {
+export const getNodeDefaultUnit = (node: EvaluatedRule, cache) => {
 	if (
 		node.question &&
 		node.unit == null &&
@@ -35,12 +39,45 @@ export const getNodeDefaultUnit = (node, cache) => {
 	)
 }
 
-export function convertNodeToUnit(to: Unit, node) {
+export function convertNodeToUnit(to: Unit, node: Node) {
 	return {
 		...node,
-		nodeValue: node.unit
-			? convertUnit(node.unit, to, node.nodeValue)
-			: node.nodeValue,
+		nodeValue:
+			node.unit && node.nodeValue
+				? convertUnit(node.unit, to, node.nodeValue)
+				: node.nodeValue,
 		unit: to
+	}
+}
+
+type Multiplier = {
+	duration: number
+	unit: string
+}
+
+// This function is useful to display values in a given timeframe (eg 1 month)
+export function nodeView(multiplier: Multiplier, node: Node) {
+	if (!node?.unit || (node.unit as any) === '%') {
+		return node
+	}
+	const comptabileUnit = unitCompatibleWithDenominator(
+		node.unit,
+		multiplier.unit
+	)
+	if (comptabileUnit === null) {
+		return node
+	} else {
+		const convertedNode = convertNodeToUnit(comptabileUnit, node)
+		const unit = {
+			numerators: convertedNode.unit.numerators,
+			denominators: convertedNode.unit.denominators.filter(
+				x => x !== multiplier.unit
+			)
+		}
+		const nodeValue = convertedNode.nodeValue
+			? multiplier.duration * convertedNode.nodeValue
+			: node.nodeValue
+
+		return { ...convertedNode, unit, nodeValue }
 	}
 }
