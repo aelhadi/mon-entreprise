@@ -70,6 +70,8 @@ const Footer = () => {
 						{'  •  '}
 						<a href="https://mon-entreprise.fr/stats">Stats</a>
 						{'  •  '}
+						<Link to={sitePaths.budget}>Budget</Link>
+						{'  •  '}
 						<Link to={sitePaths.integration.index}>
 							<Trans>Intégrer nos simulateurs</Trans>
 						</Link>
