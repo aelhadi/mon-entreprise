@@ -1,8 +1,6 @@
 import { parseUnit } from 'Engine/units'
-import rawRules from 'Publicode/rules'
 import {
 	assoc,
-	chain,
 	dropLast,
 	filter,
 	fromPairs,
@@ -11,7 +9,6 @@ import {
 	join,
 	last,
 	map,
-	path,
 	pipe,
 	propEq,
 	props,
@@ -21,12 +18,8 @@ import {
 	reject,
 	split,
 	take,
-	toPairs,
-	trim,
 	when
 } from 'ramda'
-import translations from '../locales/rules-en.yaml'
-// TODO - should be in UI, not engine
 import { capitalise0, coerceArray } from '../utils'
 import { syntaxError, warning } from './error'
 
@@ -70,23 +63,10 @@ export let enrichRule = rule => {
 	}
 }
 
-// les variables dans les tests peuvent être exprimées relativement à l'espace de nom de la règle,
-// comme dans sa formule
-export let disambiguateExampleSituation = (rules, rule) =>
-	pipe(
-		toPairs,
-		map(([k, v]) => [disambiguateRuleReference(rules, rule, k), v]),
-		fromPairs
-	)
-
-export let hasKnownRuleType = rule => rule && enrichRule(rule).type
-
 export let splitName = split(' . '),
 	joinName = join(' . ')
-
 export let parentName = pipe(splitName, dropLast(1), joinName)
 export let nameLeaf = pipe(splitName, last)
-
 export let encodeRuleName = name =>
 	encodeURI(
 		name
@@ -101,7 +81,6 @@ export let decodeRuleName = name =>
 			.replace(/-/g, ' ')
 			.replace(/\u2011/g, '-')
 	)
-
 export let ruleParents = dottedName => {
 	let fragments = splitName(dottedName) // dottedName ex. [CDD . événements . rupture]
 	return range(1, fragments.length)
@@ -147,7 +126,8 @@ export let collectDefaults = pipe(
 )
 
 /****************************************
- Méthodes de recherche d'une règle */
+ Méthodes de recherche d'une règle 
+ */
 
 export let findRuleByName = (allRules, query) =>
 	(Array.isArray(allRules) ? allRules : Object.values(allRules)).find(
@@ -164,28 +144,12 @@ export let findRuleByDottedName = (allRules, dottedName) =>
 		? allRules.find(rule => rule.dottedName == dottedName)
 		: allRules[dottedName]
 
-export let findRule = (rules, nameOrDottedName) =>
-	nameOrDottedName.includes(' . ')
-		? findRuleByDottedName(rules, nameOrDottedName)
-		: findRuleByName(rules, nameOrDottedName)
-
 export let findRuleByNamespace = (allRules, ns) =>
 	allRules.filter(rule => parentName(rule.dottedName) === ns)
 
 /*********************************
- Autres */
-
-export let queryRule = rule => query => path(query.split(' . '))(rule)
-
-export let nestedSituationToPathMap = situation => {
-	if (situation == undefined) return {}
-	let rec = (o, currentPath) =>
-		typeof o === 'object'
-			? chain(([k, v]) => rec(v, [...currentPath, trim(k)]), toPairs(o))
-			: [[currentPath.join(' . '), o + '']]
-
-	return fromPairs(rec(situation, []))
-}
+ Autres 
+ */
 
 /* Traduction */
 const translateContrôle = (prop, rule, translation, lang) =>
@@ -250,22 +214,6 @@ export let translateAll = (translations, flatRules) => {
 		flatRules
 	)
 }
-
-const rulesToList = rulesObject =>
-	Object.entries(rulesObject).map(([dottedName, rule]) => ({
-		dottedName,
-		...rule
-	}))
-
-export const buildFlatRules = rulesObject =>
-	rulesToList(rulesObject).map(enrichRule)
-
-// On enrichit la base de règles avec des propriétés dérivées de celles du YAML
-export let rules = translateAll(translations, rulesToList(rawRules)).map(rule =>
-	enrichRule(rule)
-)
-
-export let rulesFr = buildFlatRules(rawRules)
 
 export let findParentDependencies = (rules, rule) => {
 	// A parent dependency means that one of a rule's parents is not just a namespace holder, it is a boolean question. E.g. is it a fixed-term contract, yes / no

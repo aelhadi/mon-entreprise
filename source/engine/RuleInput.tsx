@@ -11,7 +11,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { DottedName, Rule } from 'Types/rule'
 import DateInput from '../components/conversation/DateInput'
-import { findRuleByDottedName, queryRule } from './rules'
+import { findRuleByDottedName } from './rules'
 
 export const binaryOptionChoices = [
 	{ value: 'non', label: 'Non' },
@@ -125,7 +125,7 @@ export default function RuleInput({
 	return <Input {...commonProps} unit={unit} />
 }
 
-let getVariant = rule => queryRule(rule)('formule . une possibilité')
+let getVariant = rule => rule?.formule?.['une possibilité']
 
 export let buildVariantTree = (allRules, path) => {
 	let rec = path => {

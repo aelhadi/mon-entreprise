@@ -101,9 +101,7 @@ contrat salarié . intermittents du spectacle . retraite complémentaire technic
   références:
     audiens.org: https://www.audiens.org/solutions/entreprises-la-retraite-complementaire-agirc-arcco-au-1er-janvier-2019.html
 
-contrat salarié . intermittents du spectacle . technicien:
-  formule: intermittents du spectacle = 'technicien'
-
+contrat salarié . intermittents du spectacle . technicien: intermittents du spectacle = 'technicien'
 contrat salarié . intermittents du spectacle . technicien . non cadre:
   applicable si: statut cadre = non
   remplace:

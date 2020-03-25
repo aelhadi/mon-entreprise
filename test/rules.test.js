@@ -1,13 +1,22 @@
 import { expect } from 'chai'
-import { map } from 'ramda'
+import { chain, fromPairs, map, toPairs, trim } from 'ramda'
 import {
 	disambiguateRuleReference,
 	enrichRule,
-	nestedSituationToPathMap,
 	ruleParents,
 	rules,
 	translateAll
 } from '../source/engine/rules'
+
+let nestedSituationToPathMap = situation => {
+	if (situation == undefined) return {}
+	let rec = (o, currentPath) =>
+		typeof o === 'object'
+			? chain(([k, v]) => rec(v, [...currentPath, trim(k)]), toPairs(o))
+			: [[currentPath.join(' . '), o + '']]
+
+	return fromPairs(rec(situation, []))
+}
 
 describe('enrichRule', function() {
 	it('should extract the dotted name of the rule', function() {

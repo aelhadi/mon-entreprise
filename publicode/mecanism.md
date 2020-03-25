@@ -7,12 +7,8 @@ Contient une liste de conditions.
 Renvoie vrai si l'une des conditions est vraie.
 
 ```yaml
-age:
-  formule: 17 ans
-
-mineur émancipé:
-  formule: oui
-
+age: 17 ans
+mineur émancipé: oui
 peut voter:
   formule:
     une de ces conditions:
@@ -37,12 +33,8 @@ Sa propriété `assiette` est multipliée par un pourcentage, `taux`, ou par un 
 La multiplication peut être plafonnée : ce plafond sépare l'assiette en deux, et la partie au-dessus du plafond est tout simplement ignorée. Dans ce cas, elle se comporte comme une barème en taux marginaux à deux tranches, la deuxième au taux nul et allant de `plafond` à l'infini.
 
 ```yaml
-plafond sécurité sociale:
-  formule: 3428 €/mois
-
-assiette cotisation:
-  formule: 2300 €/mois
-
+plafond sécurité sociale: 3428 €/mois
+assiette cotisation: 2300 €/mois
 chômage:
   formule:
     produit:
@@ -60,9 +52,7 @@ Pour la première condition vraie dans la liste, on retient la valeur qui lui es
 Si aucune condition n'est vraie, alors ce mécanisme renvoie implicitement `non applicable`
 
 ```yaml
-taux réduit:
-  formule: oui
-
+taux réduit: oui
 taux allocation familiales:
   formule:
     variations:
@@ -76,12 +66,8 @@ taux allocation familiales:
 Ce mécanisme peut aussi être utilisé au sein d'un mécanisme compatible, tel que la produit ou le barème.
 
 ```yaml
-assiette cotisation:
-  formule: 2300 €/mois
-
-taux réduit:
-  formule: oui
-
+assiette cotisation: 2300 €/mois
+taux réduit: oui
 allocation familiales:
   formule:
     produit:
@@ -102,9 +88,7 @@ C'est tout simplement la somme de chaque terme de la liste. Si un des terme
 n'est pas applicable, il vaut zéro.
 
 ```yaml
-a:
-  formule: 50 €
-
+a: 50 €
 b:
   applicable si: non
   formule: 20 €
@@ -138,9 +122,7 @@ Il est conseillé de renseigner une description de chaque proposition par exempl
 Arrondi à l'entier le plus proche, ou à une précision donnée.
 
 ```yaml
-a:
-  formule: 12.45
-
+a: 12.45
 arrondi:
   formule:
     arrondi:
@@ -159,9 +141,7 @@ brut:
     somme:
       - 2000 €/mois | du 01/01/2020 | au 31/05/2020
       - 4000 €/mois | du 01/06/2020 | au 31/12/2020
-plafond:
-  formule: 3000 €/mois
-
+plafond: 3000 €/mois
 cotisation:
   formule:
     régularisation:
@@ -174,9 +154,7 @@ cotisation:
         - brut
         - plafond
 
-cotisation en mai:
-  formule: cotisation | du 01/05/2020 | au 30/05/2020
-
+cotisation en mai: cotisation | du 01/05/2020 | au 30/05/2020
 cotisation en juin:
   formule: cotisation | du 01/05/2020 | au 30/05/2020
 ```

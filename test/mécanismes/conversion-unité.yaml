@@ -115,9 +115,7 @@ Conversion dans une comparaison:
   exemples:
     - valeur attendue: true
 
-mutuelle:
-  formule: 30 €/mois
-
+mutuelle: 30 €/mois
 retraite:
   formule:
     produit:

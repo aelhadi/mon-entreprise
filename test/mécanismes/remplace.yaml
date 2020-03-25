@@ -1,9 +1,5 @@
-restaurant . prix du repas:
-  formule: 10 €/repas
-
-restaurant . client gourmand:
-  formule: oui
-
+restaurant . prix du repas: 10 €/repas
+restaurant . client gourmand: oui
 restaurant . client enfant:
   rend non applicable:
     - client gourmand
@@ -34,9 +30,7 @@ modifie une règle:
         restaurant . client enfant: oui
       valeur attendue: 8
 
-cotisations . assiette:
-  formule: 1000 €
-
+cotisations . assiette: 1000 €
 cotisations:
   formule:
     somme:
@@ -155,9 +149,7 @@ exemple3:
 exemple4:
 exemple5:
 
-A:
-  formule: 1
-
+A: 1
 B:
   remplace: A
   formule: 2
@@ -171,16 +163,12 @@ remplacement associatif:
   exemples:
     - valeur attendue: 3
 
-x:
-  formule: non
-
+x: non
 x . y:
   remplace: z
   formule: 10
 
-z:
-  formule: 1
-
+z: 1
 remplacement non applicable (branche desactivée):
   formule: z
   exemples:

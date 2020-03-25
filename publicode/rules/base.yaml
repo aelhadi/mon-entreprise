@@ -8,12 +8,8 @@ période . semaines par mois:
   unité: semaines/mois
   formule: 52 semaines/an / 12 mois/an
 
-période . début d'année:
-  formule: 01/01/2020
-
-période . fin d'année:
-  formule: 31/12/2020
-
+période . début d'année: 01/01/2020
+période . fin d'année: 31/12/2020
 plafond sécurité sociale temps plein:
   description: Le plafond de Sécurité sociale est le montant maximum des rémunérations à prendre en compte pour le calcul de certaines cotisations.
   acronyme: PSS

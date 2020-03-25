@@ -4,11 +4,7 @@ import { chain, path } from 'ramda'
 import { DottedName, EvaluatedRule } from 'Types/rule'
 import { evaluateNode } from './evaluation'
 import { parseReference } from './parseReference'
-import {
-	disambiguateRuleReference,
-	findRule,
-	findRuleByDottedName
-} from './rules'
+import { disambiguateRuleReference, findRuleByDottedName } from './rules'
 import { parseUnit, Unit } from './units'
 
 /*
@@ -144,7 +140,7 @@ export let analyseMany = (
 	}
 
 	let parsedTargets = targetNames.map(t => {
-			let parsedTarget = findRule(parsedRules, t)
+			let parsedTarget = findRuleByDottedName(parsedRules, t)
 			if (!parsedTarget)
 				throw new Error(
 					`L'objectif de calcul "${t}" ne semble pas  exister dans la base de règles`

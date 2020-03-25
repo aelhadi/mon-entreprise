@@ -72,9 +72,7 @@ entreprise . rémunération du dirigeant:
   unité: '%'
   par défaut: 1
 
-entreprise . bénéfice:
-  formule: chiffre d'affaires - charges dont rémunération dirigeant
-
+entreprise . bénéfice: chiffre d'affaires - charges dont rémunération dirigeant
 entreprise . résultat net:
   résumé: Ce qu'il reste après impôt sur les sociétés
   formule: bénéfice - impôt sur les sociétés
@@ -93,9 +91,7 @@ entreprise . impôt sur les sociétés:
   références:
     fiche service-public.fr: https://www.service-public.fr/professionnels-entreprises/vosdroits/F23575
 
-entreprise . charges dont rémunération dirigeant:
-  formule: charges + dirigeant . rémunération totale
-
+entreprise . charges dont rémunération dirigeant: charges + dirigeant . rémunération totale
 entreprise . charges:
   titre: charges de fonctionnement
   résumé: Toutes les dépenses nécessaires à l'entreprise
@@ -263,9 +259,7 @@ entreprise . établissement bancaire:
   question: S'agit-il d'un établissement bancaire, financier, d'assurance ?
   par défaut: non
 
-entreprise . taxe sur les salaires . barème:
-  formule: contrat salarié . taxe sur les salaires . barème / 1 employé * effectif
-
+entreprise . taxe sur les salaires . barème: contrat salarié . taxe sur les salaires . barème / 1 employé * effectif
 entreprise . taxe sur les salaires . abattement associations:
   applicable si: entreprise . association non lucrative
   # TODO : 20835

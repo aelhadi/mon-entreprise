@@ -49,9 +49,7 @@ artiste-auteur . revenus . BNC . frais réels:
   applicable si: recettes > 0 €/an
   non applicable si: micro-bnc
 
-artiste-auteur . revenus . BNC . charges forfaitaires:
-  formule: 34% * recettes
-
+artiste-auteur . revenus . BNC . charges forfaitaires: 34% * recettes
 artiste-auteur . cotisations:
   formule:
     somme:
@@ -79,9 +77,7 @@ artiste-auteur . cotisations . option surcotisation:
   références:
     URSSAF.fr: https://www.urssaf.fr/portail/home/espaces-dedies/artistes-auteurs-diffuseurs-comm/vous-etes-artiste-auteur/la-surcotisation.html
 
-artiste-auteur . cotisations . assiette surcotisation:
-  formule: 900 heures/an * SMIC horaire
-
+artiste-auteur . cotisations . assiette surcotisation: 900 heures/an * SMIC horaire
 artiste-auteur . cotisations . surcotisation:
   applicable si: option surcotisation
   remplace:

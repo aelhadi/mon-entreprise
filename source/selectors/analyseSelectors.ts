@@ -33,7 +33,14 @@ import { RootState, Simulation } from 'Reducers/rootReducer'
 import { createSelector, createSelectorCreator, defaultMemoize } from 'reselect'
 import { DottedName } from 'Types/rule'
 import { mapOrApply } from '../utils'
-
+// les variables dans les tests peuvent être exprimées relativement à l'espace de nom de la règle,
+// comme dans sa formule
+let disambiguateExampleSituation = (rules, rule) =>
+	pipe(
+		toPairs,
+		map(([k, v]) => [disambiguateRuleReference(rules, rule, k), v]),
+		fromPairs
+	)
 // create a "selector creator" that uses deep equal instead of ===
 const createDeepEqualSelector = createSelectorCreator(defaultMemoize, equals)
 

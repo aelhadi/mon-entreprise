@@ -30,9 +30,7 @@ contrat salarié:
 
         Par ailleurs, une entreprise de moins de 20 salariés ne peut pas accueillir plus de **3&nbsp;stagiaires**, et pas plus de **15% de l’effectif** pour les entreprises de plus de 20 salariés.
 
-contrat salarié . CDI:
-  formule: contrat salarié = 'CDI'
-
+contrat salarié . CDI: contrat salarié = 'CDI'
 contrat salarié . ancienneté:
   formule:
     durée:
@@ -564,12 +562,8 @@ contrat salarié . CDD . compensation pour congés non pris . proportion congés
   unité: '%'
   formule: congés non pris / congés dus en jours ouvrés
 
-contrat salarié . CDD . congés dus en jours ouvrés:
-  formule: contrat salarié . congés dus par mois * durée contrat
-
-contrat salarié . congés dus par mois:
-  formule: 25 jour ouvré / 12 mois
-
+contrat salarié . CDD . congés dus en jours ouvrés: contrat salarié . congés dus par mois * durée contrat
+contrat salarié . congés dus par mois: 25 jour ouvré / 12 mois
 contrat salarié . CDD . compensation pour congés non pris . salaire journalier:
   unité: €/jour ouvré
 
@@ -969,18 +963,10 @@ contrat salarié . apprentissage . ancienneté:
       niveau: information
       message: La durée maximale du contrat peut être portée à 4 ans lorsque la qualité de travailleur handicapé est reconnue à l'apprenti.
 
-contrat salarié . apprentissage . ancienneté . moins d'un an:
-  formule: ancienneté = 'moins d'un an'
-
-contrat salarié . apprentissage . ancienneté . moins de deux ans:
-  formule: ancienneté = 'moins de deux ans'
-
-contrat salarié . apprentissage . ancienneté . moins de trois ans:
-  formule: ancienneté = 'moins de trois ans'
-
-contrat salarié . apprentissage . ancienneté . moins de quatre ans:
-  formule: ancienneté = 'moins de quatre ans'
-
+contrat salarié . apprentissage . ancienneté . moins d'un an: ancienneté = 'moins d'un an'
+contrat salarié . apprentissage . ancienneté . moins de deux ans: ancienneté = 'moins de deux ans'
+contrat salarié . apprentissage . ancienneté . moins de trois ans: ancienneté = 'moins de trois ans'
+contrat salarié . apprentissage . ancienneté . moins de quatre ans: ancienneté = 'moins de quatre ans'
 contrat salarié . stage:
   description: |
     Un employeur qui accueille un stagiaire doit lui verser une gratification minimale. Celle-ci est en partie exonérée de cotisations sociales.
@@ -1211,9 +1197,7 @@ contrat salarié . rémunération . primes:
       - primes . ancienneté
       - fin d'année
 
-contrat salarié . rémunération . primes . base:
-  formule: 0€/mois
-
+contrat salarié . rémunération . primes . base: 0€/mois
 contrat salarié . rémunération . primes . activité:
   unité: €/mois
 
@@ -1234,12 +1218,8 @@ contrat salarié . rémunération . primes . activité . base:
   question: Quel est le montant des primes liées à l'activité du salarié ?
   par défaut: 0
 
-contrat salarié . rémunération . primes . activité . conventionnelles:
-  formule: 0 €/mois
-
-contrat salarié . rémunération . primes . ancienneté:
-  formule: 0 €/mois
-
+contrat salarié . rémunération . primes . activité . conventionnelles: 0 €/mois
+contrat salarié . rémunération . primes . ancienneté: 0 €/mois
 contrat salarié . rémunération . primes . fin d'année:
   titre: Prime de fin d'année ou de treizième mois
   description: |
@@ -1913,9 +1893,7 @@ contrat salarié . temps de travail . temps contractuel . temps hebdomadaire:
         alors: temps partiel . heures par semaine
       - sinon: base légale
 
-contrat salarié . temps de travail . base légale:
-  formule: 35 heures/semaine
-
+contrat salarié . temps de travail . base légale: 35 heures/semaine
 contrat salarié . temps de travail . temps partiel:
   question: Le contrat est-il à temps partiel ?
   description: |
@@ -2186,9 +2164,7 @@ contrat salarié . réduction générale . imputation sécurité sociale:
       assiette: réduction générale
       facteur: T sécurité sociale et chômage / T
 
-contrat salarié . réduction générale . imputation retraite complémentaire:
-  formule: réduction générale - imputation sécurité sociale
-
+contrat salarié . réduction générale . imputation retraite complémentaire: réduction générale - imputation sécurité sociale
 contrat salarié . réduction générale . plafond avec application de la DFS:
   applicable si: déduction forfaitaire spécifique > 0
   unité: €/mois
@@ -2237,9 +2213,7 @@ contrat salarié . contribution d'équilibre général:
   références:
     calcul des cotisations: https://www.agirc-arrco.fr/ce-qui-change-au-1er-janvier-2019/vous-etes-une-entreprise-tiers-declarant/
 
-contrat salarié . contribution d'équilibre général . taux employeur tranche 1:
-  formule: 1.29%
-
+contrat salarié . contribution d'équilibre général . taux employeur tranche 1: 1.29%
 contrat salarié . contribution d'équilibre technique:
   acronyme: CET
   cotisation:
@@ -2261,9 +2235,7 @@ contrat salarié . contribution d'équilibre technique:
   références:
     calcul des cotisations: https://www.agirc-arrco.fr/ce-qui-change-au-1er-janvier-2019/vous-etes-une-entreprise-tiers-declarant/
 
-contrat salarié . contribution d'équilibre technique . taux employeur:
-  formule: 0.21%
-
+contrat salarié . contribution d'équilibre technique . taux employeur: 0.21%
 contrat salarié . retraite complémentaire:
   cotisation:
     branche: retraite
@@ -2301,9 +2273,7 @@ contrat salarié . retraite complémentaire . taux employeur tranche 2:
   formule: 12.95%
 contrat salarié . retraite complémentaire . taux salarié tranche 1:
   formule: 3.15%
-contrat salarié . retraite complémentaire . taux salarié tranche 2:
-  formule: 8.64%
-
+contrat salarié . retraite complémentaire . taux salarié tranche 2: 8.64%
 contrat salarié . retraite supplémentaire:
   formule:
     somme:
@@ -2314,9 +2284,7 @@ contrat salarié . retraite supplémentaire . employeur:
   titre: Retraite supplémentaire employeur
   formule: 0€/mois
 
-contrat salarié . retraite supplémentaire . salarié:
-  formule: 0€/mois
-
+contrat salarié . retraite supplémentaire . salarié: 0€/mois
 contrat salarié . retraite supplémentaire . part déductible:
   formule:
     allègement:
@@ -2380,9 +2348,7 @@ contrat salarié . allocations familiales . taux:
   références:
     calcul: https://www.urssaf.fr/portail/home/employeur/calculer-les-cotisations/les-taux-de-cotisations/la-cotisation-dallocations-famil.html
 
-contrat salarié . allocations familiales . taux réduit:
-  formule: cotisations . assiette < plafond de réduction
-
+contrat salarié . allocations familiales . taux réduit: cotisations . assiette < plafond de réduction
 contrat salarié . allocations familiales . taux réduit . plafond de réduction:
   titre: Plafond de la réduction des allocations familiales
   formule: SMIC * 3.5
@@ -2443,12 +2409,8 @@ contrat salarié . chômage:
         cotisations . assiette: 20000
       valeur attendue: 555.34
 
-contrat salarié . chômage . taux salarié:
-  formule: 0%
-
-contrat salarié . chômage . taux employeur:
-  formule: 4.05%
-
+contrat salarié . chômage . taux salarié: 0%
+contrat salarié . chômage . taux employeur: 4.05%
 contrat salarié . complémentaire santé:
   description: |
     L'Assurance maladie (Sécurité sociale) ne rembourse pas complètement vos dépenses de santé.
@@ -2672,9 +2634,7 @@ contrat salarié . CSG et CRDS . CSG:
 
 contrat salarié . CSG et CRDS . CSG . taux déductible:
   formule: 2.4%
-contrat salarié . CSG et CRDS . CSG . taux non déductible:
-  formule: 6.8%
-
+contrat salarié . CSG et CRDS . CSG . taux non déductible: 6.8%
 contrat salarié . CSG et CRDS . CSG . base:
   titre: CSG
   formule:
@@ -2893,9 +2853,7 @@ contrat salarié . maladie . taux employeur:
         alors: 7%
       - sinon: 13%
 
-contrat salarié . maladie . taux employeur . taux réduit:
-  formule: cotisations . assiette < plafond de réduction employeur
-
+contrat salarié . maladie . taux employeur . taux réduit: cotisations . assiette < plafond de réduction employeur
 contrat salarié . maladie . taux salarié:
   formule:
     variations:
@@ -2903,9 +2861,7 @@ contrat salarié . maladie . taux salarié:
         alors: 1.5%
       - sinon: 0%
 
-contrat salarié . maladie . plafond de réduction employeur:
-  formule: 2.5 * SMIC
-
+contrat salarié . maladie . plafond de réduction employeur: 2.5 * SMIC
 contrat salarié . médecine du travail:
   alias: santé au travail
   cotisation:
@@ -2951,9 +2907,7 @@ contrat salarié . prévoyance . employeur:
   titré: Prévoyance employeur
   formule: 0 €/mois
 
-contrat salarié . prévoyance . salarié:
-  formule: 0 €/mois
-
+contrat salarié . prévoyance . salarié: 0 €/mois
 contrat salarié . prévoyance . part déductible:
   formule:
     allègement:
@@ -3325,9 +3279,7 @@ contrat salarié . vieillesse . taux salarié déplafonné:
   formule: 0.4%
 contrat salarié . vieillesse . taux employeur plafonné:
   formule: 8.55%
-contrat salarié . vieillesse . taux employeur déplafonné:
-  formule: 1.9%
-
+contrat salarié . vieillesse . taux employeur déplafonné: 1.9%
 contrat salarié . forfait social:
   titre: Forfait social
   description: |
@@ -3420,12 +3372,8 @@ contrat salarié . lodeom . réduction outre-mer:
   références:
     Estimateur URSSAF: https://www.urssaf.fr/portail/home/utile-et-pratique/estimateur-exoneration-lodeom.html?ut=
 
-contrat salarié . lodeom . plafond de l'assiette:
-  formule: borne supérieure * SMIC
-
-contrat salarié . lodeom . écart au plafond de l'assiette:
-  formule: plafond de l'assiette - cotisations . assiette
-
+contrat salarié . lodeom . plafond de l'assiette: borne supérieure * SMIC
+contrat salarié . lodeom . écart au plafond de l'assiette: plafond de l'assiette - cotisations . assiette
 contrat salarié . lodeom . éligible barème compétitivité:
   titre: Eligibilité au barème de compétitivité
   applicable si: zone un
@@ -3527,9 +3475,7 @@ contrat salarié . lodeom . paramètre T:
         alors: 0.3254
   note: La valeur du paramètre `T` dépend du taux FNAL. Une meilleur implémentation consiste à calculer ce paramètre comme une somme de taux.
 
-contrat salarié . cotisations . assiette forfaitaire:
-  formule: non
-
+contrat salarié . cotisations . assiette forfaitaire: non
 contrat salarié . cotisations . assiette forfaitaire . montant:
   titre: assiette forfaitaire de cotisations
   non applicable si: rémunération réelle

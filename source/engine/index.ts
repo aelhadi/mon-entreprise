@@ -2,7 +2,7 @@ import { safeLoad } from 'js-yaml'
 import { Simulation } from 'Reducers/rootReducer'
 import { DottedName, Rule } from 'Types/rule'
 import { evaluateNode } from './evaluation'
-import { collectDefaults, enrichRule, rulesFr } from './rules'
+import { collectDefaults, enrichRule } from './rules'
 import { parseAll } from './traverse'
 import { parseUnit } from './units'
 
@@ -42,7 +42,7 @@ export default class Engine {
 			...(config?.extra ? enrichRules(config.extra) : [])
 		]
 		this.parsedRules = parseAll(this.rules) as any
-		this.defaultValues = collectDefaults(this.rules)
+		this.defaultValues = collectDefaults(this.parsedRules)
 	}
 
 	private resetCache() {

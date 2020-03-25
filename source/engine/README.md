@@ -38,9 +38,7 @@ Une formule de calcul peut référencer d'autres variables. Dans l'exemple suiva
 la règle `prix total` aura pour valeur 50 (= 5 \* 10)
 
 ```yaml
-prix d'un repas:
-  formule: 10 €
-
+prix d'un repas: 10 €
 prix total:
   formule: 5 * prix d'un repas
 ```
@@ -54,12 +52,8 @@ Pour fiabiliser les calculs et faciliter leur compréhension, on peut préciser
 l'unité des valeurs littérales :
 
 ```yaml
-prix d'un repas:
-  formule: 10 €/repas
-
-nombre de repas:
-  formule: 5 repas
-
+prix d'un repas: 10 €/repas
+nombre de repas: 5 repas
 prix total:
   formule: nombre de repas * prix d'un repas
 ```
@@ -73,15 +67,9 @@ Ce système d'unité permet de typer les formules de calcul et de rejeter
 automatiquement des formules incohérentes :
 
 ```yaml
-prix d'un repas:
-  formule: 10 €/repas
-
-nombre de repas:
-  formule: 5 repas
-
-frais de réservation:
-  formule: 1 €/repas
-
+prix d'un repas: 10 €/repas
+nombre de repas: 5 repas
+frais de réservation: 1 €/repas
 prix total:
   formule: nombre de repas * prix d'un repas + frais de réservation
 # Erreur:
@@ -107,9 +95,7 @@ prix total:
 Publicode convertit automatiquement les unités si besoin.
 
 ```yaml
-salaire:
-  formule: 1500 €/mois
-
+salaire: 1500 €/mois
 prime faible salaire:
   applicable si: salaire < 20 k€/an
   formule: 300€
@@ -165,9 +151,7 @@ Les espaces de noms sont utiles pour organiser un grand nombre de règles. On
 utilise le `.` pour définir la hiérarchie des noms.
 
 ```yaml
-prime de vacances:
-  formule: taux * 1000€
-
+prime de vacances: taux * 1000€
 prime de vacances . taux:
   formule: 6%
 ```
@@ -185,9 +169,7 @@ spécifique par mécanisme.
 Par exemple on a un mécanisme `barème`:
 
 ```yaml
-revenu imposable:
-  formule: 54126 €
-
+revenu imposable: 54126 €
 impôt sur le revenu:
   formule:
     barème:
@@ -207,12 +189,8 @@ impôt sur le revenu:
 La syntaxe hiérarchique de Yaml permet d'imbriquer les mécanismes :
 
 ```yaml
-prime . fixe:
-  formule: 1000€
-
-prime . taux du bonus:
-  formule: 20%
-
+prime . fixe: 1000€
+prime . taux du bonus: 20%
 prime:
   formule:
     somme:
@@ -229,9 +207,7 @@ prime:
 On peut définir des conditions d'applicabilité des règles :
 
 ```yaml
-date de début:
-  formule: 12/02/2020
-
+date de début: 12/02/2020
 ancienneté en fin d'année:
   formule:
     durée:
@@ -259,12 +235,8 @@ Publicode dispose d'un mécanisme de remplacement qui permet d'amender n'importe
 quelle règle existante sans avoir besoin de la modifier :
 
 ```yaml
-frais de repas:
-  formule: 5 €/repas
-
-convention hôtels cafés restaurants:
-  formule: oui
-
+frais de repas: 5 €/repas
+convention hôtels cafés restaurants: oui
 convention hôtels cafés restaurants . frais de repas:
   remplace: frais de repas
   formule: 6 €/repas
@@ -276,12 +248,8 @@ montant repas mensuels:
 On peut également choisir de remplacer uniquement dans un contexte donné:
 
 ```yaml
-a:
-  formule: 10 min
-
-b:
-  formule: 20 min
-
+a: 10 min
+b: 20 min
 règle nulle:
   remplace:
     - règle: a
@@ -290,9 +258,7 @@ règle nulle:
       dans: somme avec remplacements
   formule: 0
 
-somme originale:
-  formule: a + b
-
+somme originale: a + b
 somme avec remplacements:
   formule: a + b
 ```

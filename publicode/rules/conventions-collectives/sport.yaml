@@ -98,9 +98,7 @@ contrat salarié . convention collective . sport . cotisations . régime frais d
   formule: option = 'R1'
 contrat salarié . convention collective . sport . cotisations . régime frais de santé . option . R2:
   formule: option = 'R2'
-contrat salarié . convention collective . sport . cotisations . régime frais de santé . option . R3:
-  formule: option = 'R3'
-
+contrat salarié . convention collective . sport . cotisations . régime frais de santé . option . R3: option = 'R3'
 contrat salarié . convention collective . sport . cotisations . formation professionnelle:
   remplace: contrat salarié . formation professionnelle
   formule:
