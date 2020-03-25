@@ -15,14 +15,16 @@ type EngineConfig = {
 	extra?: string | Array<any> | object
 }
 
-let enrichRules = input => {
+export let enrichRules = input => {
 	const rules =
 		typeof input === 'string' ? safeLoad(input.replace(/\t/g, '  ')) : input
 	const rulesList = Array.isArray(rules)
 		? rules
 		: Object.entries(rules).map(([dottedName, rule]) => ({
 				dottedName,
-				...(rule as any)
+				...(typeof rule === 'string'
+					? { formule: rule }
+					: { ...(rule as Object) })
 		  }))
 	return rulesList.map(enrichRule)
 }

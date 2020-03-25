@@ -267,6 +267,12 @@ variables négatives dans expression:
     - situation:
         salaire de base: 3000
       valeur attendue: -300
+
+brut: 2000€
+règle avec valeur seule:
+  formule: brut
+  exemples:
+    - valeur attendue: 2000
 # TODO
 # expression sur plusieurs lignes:
 #   formule: >

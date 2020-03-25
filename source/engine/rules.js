@@ -48,7 +48,6 @@ export let enrichRule = rule => {
 				'Si vous souhaitez que la valeur de votre variable soit toujours la même unité, gardez `unité`'
 			)
 		}
-
 		return {
 			...rule,
 			dottedName,

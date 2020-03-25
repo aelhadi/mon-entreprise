@@ -29,6 +29,7 @@ export default (rules, rule, parsedRules) => {
 	let parentDependencies = findParentDependencies(rules, rule)
 
 	let root = { ...rule, parentDependencies }
+
 	let parsedRoot = evolve({
 		// Voilà les attributs d'une règle qui sont aujourd'hui dynamiques, donc à traiter
 		// Les métadonnées d'une règle n'en font pas aujourd'hui partie
@@ -129,7 +130,6 @@ export default (rules, rule, parsedRules) => {
 			}
 		})
 	})(root)
-
 	parsedRules[rule.dottedName] = {
 		// Pas de propriété explanation et jsx ici car on est parti du (mauvais)
 		// principe que 'non applicable si' et 'formule' sont particuliers, alors
