@@ -38,14 +38,14 @@ export default (tracker: Tracker) => {
 
 		if (
 			action.type === 'UPDATE_SITUATION' ||
-			action.type === 'UPDATE_DEFAULT_UNIT'
+			action.type === 'UPDATE_TARGET_UNIT'
 		) {
 			tracker.push([
 				'trackEvent',
 				'Simulator',
 				'update situation',
-				...(action.type === 'UPDATE_DEFAULT_UNIT'
-					? ['unité', action.defaultUnit]
+				...(action.type === 'UPDATE_TARGET_UNIT'
+					? ['unité', action.targetUnit]
 					: [action.fieldName, action.value])
 			])
 		}

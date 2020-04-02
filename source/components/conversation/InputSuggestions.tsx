@@ -1,14 +1,12 @@
 import { toPairs } from 'ramda'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import { defaultUnitSelector } from 'Selectors/analyseSelectors'
-import { convertUnit, parseUnit, Unit } from '../../engine/units'
+import { serializeUnit, Unit } from '../../engine/units'
 
 type InputSuggestionsProps = {
 	suggestions: Record<string, number>
-	onFirstClick: (val: number | string) => void
-	onSecondClick?: (val: number | string) => void
+	onFirstClick: (val: string) => void
+	onSecondClick?: (val: string) => void
 	unit?: Unit
 }
 
@@ -20,7 +18,6 @@ export default function InputSuggestions({
 }: InputSuggestionsProps) {
 	const [suggestion, setSuggestion] = useState<number>()
 	const { t } = useTranslation()
-	const defaultUnit = parseUnit(useSelector(defaultUnitSelector) ?? '')
 	if (!suggestions) return null
 
 	return (
@@ -28,16 +25,18 @@ export default function InputSuggestions({
 			<small>Suggestions :</small>
 
 			{toPairs(suggestions).map(([text, value]: [string, number]) => {
-				value = unit ? convertUnit(unit, defaultUnit, value) : value
+				const valueWithUnit: string = `${value}${
+					unit ? serializeUnit(unit)?.replace(' / ', '/') : ''
+				}`
 				return (
 					<button
 						className="ui__ link-button"
 						key={value}
 						css="margin: 0 0.4rem !important"
 						onClick={() => {
-							onFirstClick(value)
+							onFirstClick(valueWithUnit)
 							if (suggestion !== value) setSuggestion(value)
-							else onSecondClick && onSecondClick(value)
+							else onSecondClick && onSecondClick(valueWithUnit)
 						}}
 						title={t('cliquez pour insérer cette suggestion')}
 					>

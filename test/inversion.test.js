@@ -86,7 +86,7 @@ describe('inversions', () => {
                 - net
         cadre:
         assiette:
-          formule: 67 + brut
+          formule: 67€ + brut
 
       `
 		const result = new Engine({ rules }).evaluate('brut')
@@ -127,7 +127,7 @@ describe('inversions', () => {
         taxe:
           formule:
             produit:
-              assiette: 1200
+              assiette: 1200 €
               variations:
                 - si: cadre
                   alors:

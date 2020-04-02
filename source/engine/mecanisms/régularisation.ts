@@ -140,7 +140,7 @@ function evaluate(
 	)
 		.map(regulariseYear)
 		.flat()
-
+	console.log(temporalValue, evaluationWithRegularisation)
 	return {
 		...node,
 		temporalValue: evaluationWithRegularisation,

@@ -8,7 +8,7 @@ import {
 	nextStepsSelector
 } from '../source/selectors/analyseSelectors'
 let baseState = {
-	simulation: { defaultUnit: '€/an', situation: {}, foldedSteps: [] }
+	simulation: { defaultUnit: '€', situation: {}, foldedSteps: [] }
 }
 
 describe('conversation', function() {
@@ -24,7 +24,7 @@ describe('conversation', function() {
 			state = merge(baseState, {
 				rules,
 				simulation: {
-					defaultUnit: '€/an',
+					defaultUnit: '€',
 					config: { objectifs: ['top . startHere'] },
 					foldedSteps: []
 				}
@@ -50,7 +50,7 @@ describe('conversation', function() {
 		let step1 = merge(baseState, {
 			rules,
 			simulation: {
-				defaultUnit: '€/an',
+				defaultUnit: '€',
 				config: { objectifs: ['top . startHere'] },
 				foldedSteps: []
 			}
@@ -96,7 +96,8 @@ describe('conversation', function() {
 		let rules = {
 			net: { formule: 'brut - cotisation' },
 			brut: {
-				question: 'Quel est le salaire brut ?'
+				question: 'Quel est le salaire brut ?',
+				unité: '€/an'
 			},
 			cotisation: {
 				formule: {

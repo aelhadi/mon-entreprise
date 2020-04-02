@@ -19,10 +19,10 @@ let runExamples = (examples, rule) =>
 		)
 		const evaluation = engine
 			.setSituation(situation)
-			.setDefaultUnits(
-				ex['unités par défaut'] ?? [rule['unité par défaut'] ?? '€/mois']
+			.evaluate(
+				rule.dottedName,
+				ex['unités par défaut']?.[0] ?? rule['unité par défaut']
 			)
-			.evaluate(rule.dottedName)
 		const ok =
 			evaluation.nodeValue === expected
 				? true

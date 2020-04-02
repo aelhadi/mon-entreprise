@@ -15,7 +15,7 @@ import {
 	nameLeaf
 } from './ruleUtils'
 import { ParsedRule, Rule, Rules } from './types'
-import { parseUnit } from './units'
+import { parseUnit, simplifyUnit } from './units'
 
 export default function<Names extends string>(
 	rules: Rules<Names>,
@@ -49,18 +49,19 @@ export default function<Names extends string>(
 	}
 	rawRule as Rule
 
-	const name = nameLeaf(dottedName)
-	let unit = rawRule.unité && parseUnit(rawRule.unité)
-	let defaultUnit =
-		rawRule['unité par défaut'] && parseUnit(rawRule['unité par défaut'])
-
-	if (defaultUnit && unit) {
-		warning(
-			name,
-			'Le paramètre `unité` est plus contraignant que `unité par défaut`.',
-			'Si vous souhaitez que la valeur de votre variable soit toujours la même unité, gardez `unité`'
+	if (
+		rawRule['par défaut'] &&
+		rawRule['formule'] &&
+		!rawRule.formule['une possibilité']
+	) {
+		throw new warning(
+			dottedName,
+			'Une règle ne peut pas avoir à la fois une formule ET une valeur par défaut.'
 		)
 	}
+
+	const name = nameLeaf(dottedName)
+	let unit = rawRule.unité != null ? parseUnit(rawRule.unité) : undefined
 
 	const rule = {
 		...rawRule,
@@ -68,13 +69,12 @@ export default function<Names extends string>(
 		dottedName,
 		type: rawRule.type,
 		title: capitalise0(rawRule['titre'] || name),
-		defaultValue: rawRule['par défaut'],
 		examples: rawRule['exemples'],
 		icons: rawRule['icônes'],
 		summary: rawRule['résumé'],
 		unit,
-		defaultUnit,
-		parentDependencies
+		parentDependencies,
+		defaultValue: rawRule['par défaut']
 	}
 
 	let parsedRule = evolve({
@@ -123,6 +123,10 @@ export default function<Names extends string>(
 				return disambiguateRuleReference(rules, dottedName, referenceName)
 			}),
 		remplace: evolveReplacement(rules, rule, parsedRules),
+		defaultValue: value =>
+			typeof value === 'string'
+				? parse(rules, rule, parsedRules)(value)
+				: value,
 		formule: value => {
 			let evaluate = (cache, situationGate, parsedRules, node) => {
 				let explanation = evaluateNode(
@@ -185,7 +189,10 @@ export default function<Names extends string>(
 		...parsedRule,
 		evaluate,
 		parsed: true,
-		defaultUnit: parsedRule.defaultUnit || parsedRule.formule?.unit,
+		unit:
+			parsedRule.unit ??
+			(parsedRule.formule?.unit && simplifyUnit(parsedRule.formule.unit)) ??
+			parsedRule.defaultValue?.unit,
 		isDisabledBy: [],
 		replacedBy: []
 	}

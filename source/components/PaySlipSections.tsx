@@ -4,7 +4,7 @@ import React from 'react'
 import { Trans } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { DottedName } from 'Rules'
-import { defaultUnitSelector } from 'Selectors/analyseSelectors'
+import { targetUnitSelector } from 'Selectors/analyseSelectors'
 import RuleLink from './RuleLink'
 
 export let SalaireBrutSection = ({
@@ -64,7 +64,7 @@ export let SalaireBrutSection = ({
 }
 
 export let Line = ({ rule, className = '', ...props }) => {
-	const defaultUnit = useSelector(defaultUnitSelector)
+	const defaultUnit = useSelector(targetUnitSelector)
 	return (
 		<>
 			<RuleLink {...rule} className={className} />

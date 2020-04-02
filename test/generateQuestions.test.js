@@ -126,7 +126,7 @@ describe('Missing variables', function() {
 		}
 		const result = Object.keys(
 			new Engine({ rules: rawRules })
-				.setSituation({ 'top . trois': 'ko' })
+				.setSituation({ 'top . trois': "'ko'" })
 				.evaluate('top . startHere').missingVariables
 		)
 

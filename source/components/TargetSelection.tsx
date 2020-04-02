@@ -4,10 +4,11 @@ import PeriodSwitch from 'Components/PeriodSwitch'
 import RuleLink from 'Components/RuleLink'
 import { ThemeColorsContext } from 'Components/utils/colors'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
+import Engine from 'Engine'
 import { formatCurrency } from 'Engine/format'
 import { ParsedRule } from 'Engine/types'
-import { isEmpty, isNil } from 'ramda'
-import React, { useContext, useEffect, useState } from 'react'
+import { isNil } from 'ramda'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import emoji from 'react-easy-emoji'
 import { Trans, useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -17,6 +18,7 @@ import { DottedName } from 'Rules'
 import {
 	analysisWithDefaultsSelector,
 	situationSelector,
+	targetUnitSelector,
 	useTarget
 } from 'Selectors/analyseSelectors'
 import Animate from 'Ui/animate'
@@ -46,28 +48,6 @@ export default function TargetSelection({ showPeriodSwitch = true }) {
 		) || []
 
 	useEffect(() => {
-		// Initialize defaultValue for target that can't be computed
-		// TODO: this logic shouldn't be here
-		targets
-			.filter(
-				target =>
-					(!target.formule || isEmpty(target.formule)) &&
-					(!isNil(target.defaultValue) ||
-						!isNil(target.explanation?.defaultValue)) &&
-					!situation[target.dottedName]
-			)
-
-			.forEach(target => {
-				dispatch(
-					updateSituation(
-						target.dottedName,
-						!isNil(target.defaultValue)
-							? target.defaultValue
-							: target.explanation?.defaultValue
-					)
-				)
-			})
-
 		setInitialRender(false)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
@@ -124,8 +104,7 @@ let Targets = ({ targets, initialRender }) => (
 				.map(target => target.explanation || target)
 				.filter(target => {
 					return (
-						target.isApplicable !== false &&
-						(target.question || target.nodeValue)
+						target.nodeValue !== false && (target.question || target.nodeValue)
 					)
 				})
 				.map(target => (
@@ -186,7 +165,7 @@ const Target = ({ target, initialRender }) => {
 									onFirstClick={value => {
 										dispatch(updateSituation(target.dottedName, value))
 									}}
-									unit={target.defaultUnit}
+									unit={target.unit}
 								/>
 							</div>
 						</Animate.fromTop>
@@ -235,16 +214,30 @@ function TargetInputOrValue({
 	const colors = useContext(ThemeColorsContext)
 	const dispatch = useDispatch()
 	const situationValue = useSelector(situationSelector)[target.dottedName]
-
 	const targetWithValue = useTarget(target.dottedName)
 	const inversionFail = useSelector(analysisWithDefaultsSelector)?.cache._meta
 		.inversionFail
+	const targetUnit = useSelector(targetUnitSelector)
 	const value =
-		targetWithValue?.nodeValue != null && !inversionFail
-			? Math.round(targetWithValue.nodeValue)
+		typeof situationValue === 'string'
+			? Math.round(
+					new Engine({ rules: {} }).evaluate(situationValue, targetUnit)
+						.nodeValue || 0
+			  )
+			: situationValue != null
+			? situationValue
+			: targetWithValue?.nodeValue != null && !inversionFail
+			? Math.round(+targetWithValue.nodeValue)
 			: undefined
 	const blurValue = inversionFail && !isActiveInput
 
+	const onChange = useCallback(
+		evt =>
+			dispatch(
+				updateSituation(target.dottedName, +evt.target.value + ' ' + targetUnit)
+			),
+		[targetUnit, target, dispatch]
+	)
 	return (
 		<span
 			className="targetInputOrValue"
@@ -260,15 +253,15 @@ function TargetInputOrValue({
 						}}
 						debounce={600}
 						name={target.dottedName}
-						value={situationValue ? Math.round(situationValue) : value}
+						value={value}
 						className={
-							isActiveInput || isNil(value) ? 'targetInput' : 'editableTarget'
+							isActiveInput ||
+							isNil(value) ||
+							(target.question && isSmallTarget)
+								? 'targetInput'
+								: 'editableTarget'
 						}
-						onChange={evt =>
-							dispatch(
-								updateSituation(target.dottedName, Number(evt.target.value))
-							)
-						}
+						onChange={onChange}
 						onFocus={() => {
 							if (isSmallTarget) return
 							dispatch(setActiveTarget(target.dottedName))

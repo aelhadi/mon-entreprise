@@ -50,7 +50,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 					dottedName.split(' . ').length + 1,
 			rules
 		)
-	let displayedRule = analysedExample || analysedRule
+	let displayedRule = (analysedExample || analysedRule).explanation
 	const renderToggleSourceButton = () => {
 		return (
 			<button
@@ -132,12 +132,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 									}
 								`}
 							>
-								<Value
-									{...displayedRule}
-									nilValueSymbol={displayedRule.parentDependencies.some(
-										parent => parent?.nodeValue == false
-									)}
-								/>
+								<Value {...displayedRule} />
 							</div>
 							{displayedRule.defaultValue != null && (
 								<div id="ruleDefault">
@@ -145,7 +140,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 									<Value
 										{...displayedRule}
 										nodeValue={displayedRule.defaultValue}
-										unit={displayedRule.unit || displayedRule.defaultUnit}
+										unit={displayedRule.unit}
 									/>
 								</div>
 							)}

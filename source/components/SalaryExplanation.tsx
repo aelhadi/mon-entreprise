@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from 'Reducers/rootReducer'
 import {
 	analysisWithDefaultsSelector,
-	defaultUnitSelector
+	targetUnitSelector
 } from 'Selectors/analyseSelectors'
 import * as Animate from 'Ui/animate'
 
@@ -117,7 +117,7 @@ function RevenueRepatitionSection() {
 }
 
 function PaySlipSection() {
-	const unit = useSelector(defaultUnitSelector)
+	const unit = useSelector(targetUnitSelector)
 	return (
 		<section>
 			<h2>

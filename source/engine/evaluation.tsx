@@ -21,6 +21,7 @@ import {
 	temporalAverage,
 	zipTemporals
 } from './temporal'
+import { ParsedRule, ParsedRules } from './types'
 
 export let makeJsx = node =>
 	typeof node.jsx == 'function'
@@ -40,12 +41,6 @@ export let evaluateNode = (cache, situationGate, parsedRules, node) => {
 	let evaluatedNode = node.evaluate
 		? node.evaluate(cache, situationGate, parsedRules, node)
 		: node
-	if (typeof evaluatedNode.nodeValue !== 'number') {
-		return evaluatedNode
-	}
-	evaluatedNode = node.unité
-		? convertNodeToUnit(node.unit, evaluatedNode)
-		: simplifyNodeUnit(evaluatedNode)
 	return evaluatedNode
 }
 
@@ -209,4 +204,23 @@ export let evaluateObject = (objectShape, effect) => (
 		temporalValue,
 		temporalExplanation
 	}
+}
+
+type DefaultValues<Names extends string> = { [name in Names]: any } | {}
+export function collectDefaults<Names extends string>(
+	parsedRules: ParsedRules<Names>
+): DefaultValues<Names> {
+	const cache = { _meta: { contextRule: [] as string[] } }
+	return (Object.values(parsedRules) as Array<ParsedRule<Names>>).reduce(
+		(acc, parsedRule) => {
+			if (parsedRule?.['par défaut'] == null) {
+				return acc
+			}
+			return {
+				...acc,
+				[parsedRule.dottedName]: parsedRule['par défaut']
+			}
+		},
+		{}
+	)
 }

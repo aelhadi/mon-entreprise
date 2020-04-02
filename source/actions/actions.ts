@@ -17,7 +17,7 @@ export type Action =
 	| HideControlAction
 	| LoadPreviousSimulationAction
 	| SetSituationBranchAction
-	| UpdateDefaultUnitAction
+	| UpdateTargetUnitAction
 	| SetActiveTargetAction
 
 export type ThunkResult<R> = ThunkAction<
@@ -64,7 +64,7 @@ type SetSituationBranchAction = ReturnType<typeof setSituationBranch>
 type SetActiveTargetAction = ReturnType<typeof setActiveTarget>
 type HideControlAction = ReturnType<typeof hideControl>
 type ExplainVariableAction = ReturnType<typeof explainVariable>
-type UpdateDefaultUnitAction = ReturnType<typeof updateUnit>
+type UpdateTargetUnitAction = ReturnType<typeof updateUnit>
 
 export const resetSimulation = () =>
 	({
@@ -132,10 +132,10 @@ export const updateSituation = (fieldName: DottedName, value: unknown) =>
 		value
 	} as const)
 
-export const updateUnit = (defaultUnit: string) =>
+export const updateUnit = (targetUnit: string) =>
 	({
-		type: 'UPDATE_DEFAULT_UNIT',
-		defaultUnit
+		type: 'UPDATE_TARGET_UNIT',
+		targetUnit
 	} as const)
 
 export function setExample(name: string, situation, dottedName: DottedName) {

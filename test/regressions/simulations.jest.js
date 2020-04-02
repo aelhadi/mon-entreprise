@@ -31,8 +31,9 @@ const runSimulations = (
 	Object.entries(situations).map(([name, situations]) =>
 		situations.forEach(situation => {
 			engine.setSituation({ ...baseSituation, ...situation })
-			engine.setDefaultUnits(defaultUnits)
-			const res = engine.evaluate(targets).map(node => node.nodeValue)
+			const res = targets.map(
+				target => engine.evaluate(target, defaultUnits[0]).nodeValue
+			)
 			// Stringify is not required, but allows the result to be displayed in a single
 			// line in the snapshot, which considerably reduce the number of lines of this snapshot
 			// and improve its readability.

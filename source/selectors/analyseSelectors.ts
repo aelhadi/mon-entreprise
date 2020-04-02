@@ -1,10 +1,6 @@
 import Engine, { parseRules } from 'Engine'
 import { getNextSteps } from 'Engine/generateQuestions'
-import {
-	collectDefaults,
-	disambiguateRuleReference,
-	splitName
-} from 'Engine/ruleUtils'
+import { disambiguateRuleReference, splitName } from 'Engine/ruleUtils'
 import { ParsedRules } from 'Engine/types'
 import {
 	add,
@@ -63,11 +59,6 @@ export let parsedRulesSelector = createSelector(
 	rules => parseRules(rules) as ParsedRules<DottedName>
 )
 
-export let ruleDefaultsSelector = createSelector(
-	[parsedRulesSelector],
-	parsedRules => collectDefaults(parsedRules)
-)
-
 export let targetNamesSelector = (state: RootState) => {
 	let objectifs = configSelector(state).objectifs
 	if (!objectifs || !Array.isArray(objectifs)) {
@@ -120,8 +111,8 @@ let validatedStepsSelector = createSelector(
 	[state => state.simulation?.foldedSteps, targetNamesSelector],
 	(foldedSteps, targetNames) => [...(foldedSteps || []), ...targetNames]
 )
-export const defaultUnitSelector = (state: RootState) =>
-	state.simulation?.defaultUnit ?? '€/mois'
+export const targetUnitSelector = (state: RootState) =>
+	state.simulation?.targetUnit ?? '€/mois'
 let branchesSelector = (state: RootState) => configSelector(state).branches
 let configSituationSelector = (state: RootState) =>
 	configSelector(state).situation || {}
@@ -169,7 +160,6 @@ export let validatedSituationBranchesSelector = createSituationBrancheSelector(
 
 let evaluateRule = (parsedRules, ruleDottedName, situation, defaultUnits) =>
 	new Engine({ rules: parsedRules })
-		.setDefaultUnits(defaultUnits)
 		.setSituation(situation)
 		.evaluate(ruleDottedName)
 
@@ -179,7 +169,7 @@ export let ruleAnalysisSelector = createSelector(
 		(_, props: { dottedName: DottedName }) => props.dottedName,
 		situationBranchesSelector,
 		state => state.situationBranch || 0,
-		defaultUnitSelector
+		targetUnitSelector
 	],
 	(rules, dottedName, situations, situationBranch, defaultUnit) => {
 		return evaluateRule(
@@ -227,15 +217,18 @@ let makeAnalysisSelector = (
 			parsedRulesSelector,
 			targetNamesSelector,
 			situationSelector,
-			defaultUnitSelector
+			targetUnitSelector
 		],
 		(parsedRules, targetNames, situations, defaultUnit) => {
 			return mapOrApply(situation => {
-				const engine = new Engine({ rules: parsedRules, useDefaultValues })
-					.setSituation(situation)
-					.setDefaultUnits([defaultUnit])
+				const engine = new Engine({
+					rules: parsedRules,
+					useDefaultValues
+				}).setSituation(situation)
 				return {
-					targets: targetNames.map(target => engine.evaluate(target)),
+					targets: targetNames.map(target =>
+						engine.evaluate(target, defaultUnit)
+					),
 					cache: engine.getCache(),
 					controls: engine.controls()
 				}

@@ -7,7 +7,6 @@ import originRules, { DottedName, Rules } from 'Rules'
 import { analysisWithDefaultsSelector } from 'Selectors/analyseSelectors'
 import { SavedSimulation } from 'Selectors/storageSelectors'
 import i18n, { AvailableLangs } from '../i18n'
-import { areUnitConvertible, convertUnit, parseUnit } from './../engine/units'
 import inFranceAppReducer, { Company } from './inFranceAppReducer'
 import storageRootReducer from './storageReducer'
 
@@ -106,37 +105,6 @@ function updateSituation(
 	return { ...removePreviousTarget(situation), [fieldName]: value }
 }
 
-function updateDefaultUnit(situation: Situation, { toUnit, analysis }) {
-	const unit = parseUnit(toUnit)
-	const goals = goalsFromAnalysis(analysis)
-	const convertedSituation = Object.keys(situation)
-		.map(
-			dottedName =>
-				analysis.targets.find(target => target.dottedName === dottedName) ||
-				analysis.cache[dottedName]
-		)
-		.filter(
-			rule =>
-				rule.dottedName === 'entreprise . charges' || // HACK en attendant de revoir le fonctionnement des unités
-				(goals?.includes(rule.dottedName) &&
-					(rule.unit || rule.defaultUnit) &&
-					!rule.unité &&
-					areUnitConvertible(rule.unit || rule.defaultUnit, unit))
-		)
-		.reduce(
-			(convertedSituation, rule) => ({
-				...convertedSituation,
-				[rule.dottedName]: convertUnit(
-					rule.unit || rule.defaultUnit,
-					unit,
-					situation[rule.dottedName]
-				)
-			}),
-			situation
-		)
-	return convertedSituation
-}
-
 type QuestionsKind =
 	| "à l'affiche"
 	| 'non prioritaires'
@@ -161,14 +129,14 @@ export type Simulation = {
 	hiddenControls: Array<string>
 	situation: Situation
 	initialSituation: Situation
-	defaultUnit: string
+	targetUnit: string
 	foldedSteps: Array<DottedName>
 	unfoldedStep?: DottedName | null
 }
 function getCompanySituation(company: Company): Situation {
 	return {
 		...(company?.localisation && {
-			'établissement . localisation': JSON.stringify(company.localisation)
+			'établissement . localisation': company.localisation
 		}),
 		...(company?.dateDeCréation && {
 			'entreprise . date de création': company.dateDeCréation.replace(
@@ -199,7 +167,7 @@ function simulation(
 			hiddenControls: [],
 			situation: companySituation,
 			initialSituation: companySituation,
-			defaultUnit: config['unité par défaut'] || '€/mois',
+			targetUnit: config['unité par défaut'] || '€/mois',
 			foldedSteps: Object.keys(companySituation) as Array<DottedName>,
 			unfoldedStep: null
 		}
@@ -244,14 +212,10 @@ function simulation(
 				}
 			}
 			return state
-		case 'UPDATE_DEFAULT_UNIT':
+		case 'UPDATE_TARGET_UNIT':
 			return {
 				...state,
-				situation: updateDefaultUnit(state.situation, {
-					toUnit: action.defaultUnit,
-					analysis
-				}),
-				defaultUnit: action.defaultUnit
+				targetUnit: action.targetUnit
 			}
 	}
 	return state

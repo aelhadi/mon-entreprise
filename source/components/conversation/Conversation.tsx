@@ -33,7 +33,7 @@ export default function Conversation({ customEndMessages }: ConversationProps) {
 		dispatch(
 			validateStepWithValue(
 				currentQuestion,
-				rules[currentQuestion].defaultValue
+				rules[currentQuestion]['par défaut']
 			)
 		)
 	const goToPrevious = () =>

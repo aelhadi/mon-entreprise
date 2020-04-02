@@ -1,13 +1,16 @@
 import { evaluateControls } from 'Engine/controls'
-import { ParsedRules, Rules } from 'Engine/types'
+import { convertNodeToUnit, simplifyNodeUnit } from 'Engine/nodeUnits'
+import { parse } from 'Engine/parse'
+import { EvaluatedRule, ParsedRules, Rules } from 'Engine/types'
+import { parseUnit } from 'Engine/units'
+import { mapObjIndexed } from 'ramda'
 import { Simulation } from 'Reducers/rootReducer'
-import { evaluateNode } from './evaluation'
+import { evaluationError, warning } from './error'
+import { collectDefaults, evaluateNode } from './evaluation'
 import parseRules from './parseRules'
-import { collectDefaults } from './ruleUtils'
-import { parseUnit, Unit } from './units'
 
 const emptyCache = {
-	_meta: { contextRule: [], defaultUnits: [] }
+	_meta: { contextRule: [] }
 }
 
 type EngineConfig<Names extends string> = {
@@ -18,7 +21,6 @@ type EngineConfig<Names extends string> = {
 type Cache = {
 	_meta: {
 		contextRule: Array<string>
-		defaultUnits: Array<Unit>
 		inversionFail?: {
 			given: string
 			estimated: string
@@ -39,49 +41,74 @@ export default class Engine<Names extends string> {
 			typeof rules === 'string' || !(Object.values(rules)[0] as any)?.dottedName
 				? parseRules(rules)
 				: (rules as ParsedRules<Names>)
-		this.defaultValues = useDefaultValues
-			? collectDefaults(this.parsedRules)
-			: {}
+
+		this.defaultValues = mapObjIndexed(
+			(value, name) =>
+				typeof value === 'string'
+					? this.evaluateExpression(value, `[valeur par défaut] ${name}`)
+					: value,
+			useDefaultValues ? collectDefaults(this.parsedRules) : {}
+		)
 	}
 
 	private resetCache() {
 		this.cache = { ...emptyCache }
 	}
 
-	setSituation(situation: Simulation['situation'] = {}) {
-		this.situation = situation
-		this.resetCache()
-		return this
-	}
-
-	setDefaultUnits(defaultUnits: string[] = []) {
-		this.cache._meta.defaultUnits = defaultUnits.map(unit =>
-			parseUnit(unit)
-		) as any
-		return this
-	}
-
-	evaluate(expression: string | Array<string>) {
-		const results = (Array.isArray(expression) ? expression : [expression]).map(
-			expr =>
-				this.cache[expr] ||
-				(this.parsedRules[expr]
-					? evaluateNode(
-							this.cache,
-							this.situationGate,
-							this.parsedRules,
-							this.parsedRules[expr]
-					  )
-					: // TODO: To support expressions (with operations, unit conversion,
-					  // etc.) it should be enough to replace the above line with :
-					  // parse(this.parsedRules, { dottedName: '' }, this.parsedRules)(expr)
-					  // But currently there are small side effects (null values converted
-					  // to 0), so we need to modify a little bit the engine before enabling
-					  // publicode expressions in the UI.
-
-					  null)
+	private evaluateExpression(
+		expression: string,
+		context
+	): EvaluatedRule<Names> {
+		const result = simplifyNodeUnit(
+			evaluateNode(
+				this.cache,
+				this.situationGate,
+				this.parsedRules,
+				parse(
+					this.parsedRules,
+					{ dottedName: context },
+					this.parsedRules
+				)(expression)
+			)
 		)
-		return Array.isArray(expression) ? results : results[0]
+		if (Object.keys(result.defaultValue?.missingVariable ?? {}).length) {
+			throw new evaluationError(
+				context,
+				"Impossible d'évaluer l'expression car celle ci fait appel à des variables manquantes"
+			)
+		}
+		return result
+	}
+
+	setSituation(situation: Simulation['situation'] = {}) {
+		this.resetCache()
+		this.situation = mapObjIndexed(
+			(value, name) =>
+				typeof value === 'string'
+					? this.evaluateExpression(value, `[situation] ${name}`)
+					: value,
+			situation
+		)
+		return this
+	}
+
+	evaluate(expression: string, unit?: string): EvaluatedRule<Names> {
+		const result = this.evaluateExpression(
+			expression,
+			`[evaluation] ${expression}`
+		)
+		if (unit) {
+			try {
+				return convertNodeToUnit(parseUnit(unit), result)
+			} catch (e) {
+				warning(
+					`[evaluation] ${expression}`,
+					"L'unité demandée est incompatible avec l'expression évaluée",
+					e.message
+				)
+			}
+		}
+		return result
 	}
 	controls() {
 		return evaluateControls(this.cache, this.situationGate, this.parsedRules)

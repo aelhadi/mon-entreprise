@@ -46,7 +46,7 @@ export default function RuleInput({
 	onSubmit
 }: Props) {
 	let rule = rules[dottedName]
-	let unit = rule.unit || rule.defaultUnit
+	let unit = rule.unit
 	let language = useTranslation().i18n.language
 
 	let commonProps = {
@@ -123,20 +123,18 @@ export default function RuleInput({
 	return <Input {...commonProps} unit={unit} />
 }
 
-let getVariant = rule => rule?.formule?.explanation['une possibilité']
+let getVariant = rule => rule?.formule?.explanation['possibilités']
 
 export let buildVariantTree = (allRules, path) => {
 	let rec = path => {
 		let node = allRules[path]
 		if (!node) throw new Error(`La règle ${path} est introuvable`)
-		let variant = getVariant(node),
-			variants = variant && node.formule.explanation['possibilités'],
-			shouldBeExpanded = variant && true, //variants.find( v => relevantPaths.find(rp => contains(path + ' . ' + v)(rp) )),
-			canGiveUp = variant && !node.formule.explanation['choix obligatoire']
-
+		let variant = getVariant(node)
+		const variants = variant && node.formule.explanation['possibilités']
+		const canGiveUp = variant && !node.formule.explanation['choix obligatoire']
 		return Object.assign(
 			node,
-			shouldBeExpanded
+			!!variant
 				? {
 						canGiveUp,
 						children: (variants as any).map(v => rec(path + ' . ' + v))

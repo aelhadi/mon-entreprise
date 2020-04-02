@@ -1,40 +1,13 @@
 import { EvaluatedNode, mapTemporal } from './temporal'
-import {
-	areUnitConvertible,
-	convertUnit,
-	simplifyUnitWithValue,
-	Unit
-} from './units'
+import { convertUnit, simplifyUnit, Unit } from './units'
 
 export function simplifyNodeUnit(node) {
-	if (!node.unit || node.nodeValue === false || node.nodeValue == null) {
+	if (!node.unit) {
 		return node
 	}
-	const [unit, nodeValue] = simplifyUnitWithValue(node.unit, node.nodeValue)
+	const unit = simplifyUnit(node.unit)
 
-	return {
-		...node,
-		unit,
-		nodeValue
-	}
-}
-export const getNodeDefaultUnit = (node, cache) => {
-	if (
-		node.question &&
-		node.unit == null &&
-		node.defaultUnit == null &&
-		node.formule?.unit == null
-	) {
-		return false
-	}
-
-	return (
-		node.unit ||
-		cache._meta.defaultUnits.find(unit =>
-			areUnitConvertible(node.defaultUnit, unit)
-		) ||
-		node.defaultUnit
-	)
+	return convertNodeToUnit(unit, node)
 }
 
 export function convertNodeToUnit(to: Unit, node: EvaluatedNode<number>) {

@@ -1,7 +1,12 @@
 import { decompose } from 'Engine/mecanisms/utils'
 import variations from 'Engine/mecanisms/variations'
 import { convertNodeToUnit } from 'Engine/nodeUnits'
-import { inferUnit, isPercentUnit } from 'Engine/units'
+import {
+	areUnitConvertible,
+	convertUnit,
+	inferUnit,
+	serializeUnit
+} from 'Engine/units'
 import {
 	any,
 	equals,
@@ -205,10 +210,15 @@ let doInversion = (oldCache, situationGate, parsedRules, v, dottedName) => {
 		nodeValue = uniroot(
 			x => {
 				let y = fx(x)
-				return y.nodeValue - fixedObjectiveValue
+				return (
+					y.nodeValue -
+					(fixedObjectiveValue?.nodeValue == null
+						? fixedObjectiveValue
+						: convertNodeToUnit(y.unit, fixedObjectiveValue).nodeValue)
+				)
 			},
 			v['valeurs négatives possibles'] === 'oui' ? -1000000 : 0,
-			10000000,
+			100000000,
 			tolerance,
 			10
 		)
@@ -372,7 +382,7 @@ export let mecanismReduction = (recurse, k, v) => {
 			try {
 				franchise = convertNodeToUnit(assiette.unit, franchise)
 				plafond = convertNodeToUnit(assiette.unit, plafond)
-				if (!isPercentUnit(abattement.unit)) {
+				if (serializeUnit(abattement.unit) !== '%') {
 					abattement = convertNodeToUnit(assiette.unit, abattement)
 				}
 				if (décote) {
@@ -405,13 +415,13 @@ export let mecanismReduction = (recurse, k, v) => {
 				? montantFranchiséDécoté === 0
 					? 0
 					: null
-				: isPercentUnit(abattement.unit)
+				: serializeUnit(abattement.unit) === '%'
 				? max(
 						0,
 						montantFranchiséDécoté -
 							min(
 								plafond.nodeValue,
-								abattement.nodeValue * montantFranchiséDécoté
+								(abattement.nodeValue / 100) * montantFranchiséDécoté
 							)
 				  )
 				: max(
@@ -480,11 +490,11 @@ export let mecanismProduct = (recurse, k, v) => {
 		}
 		let mult = (base, rate, facteur, plafond) =>
 			Math.min(base, plafond === false ? Infinity : plafond) * rate * facteur
-		const unit = inferUnit(
+		let unit = inferUnit(
 			'*',
 			[assiette, taux, facteur].map(el => el.unit)
 		)
-		const nodeValue =
+		let nodeValue =
 			taux.nodeValue === 0 ||
 			taux.nodeValue === false ||
 			assiette.nodeValue === 0 ||
@@ -498,6 +508,10 @@ export let mecanismProduct = (recurse, k, v) => {
 						facteur.nodeValue,
 						plafond.nodeValue
 				  )
+		if (areUnitConvertible(unit, assiette.unit)) {
+			nodeValue = convertUnit(unit, assiette.unit, nodeValue)
+			unit = assiette.unit
+		}
 		return {
 			nodeValue,
 

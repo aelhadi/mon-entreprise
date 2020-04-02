@@ -122,7 +122,7 @@ impôt sur le revenu à payer:
 		let engine = new Engine({ rules: co2 })
 		engine.setSituation({
 			'nombre de douches': 30,
-			'chauffage . type': 'gaz',
+			'chauffage . type': "'gaz'",
 			'durée de la douche': 10
 		})
 		let value = engine.evaluate('douche . impact')
