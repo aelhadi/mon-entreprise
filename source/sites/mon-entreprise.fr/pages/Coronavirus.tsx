@@ -2,20 +2,18 @@ import { setSimulationConfig } from 'Actions/actions'
 import RuleLink from 'Components/RuleLink'
 import Simulation from 'Components/Simulation'
 import chomagePartielConfig from 'Components/simulationConfigs/chômage-partiel.yaml'
-import { ThemeColorsContext } from 'Components/utils/colors'
 import { IsEmbeddedContext } from 'Components/utils/embeddedContext'
 import { Markdown } from 'Components/utils/markdown'
 import { ScrollToTop } from 'Components/utils/Scroll'
+import { useEvaluation } from 'Engine/Engine'
 import { formatValue } from 'Engine/format'
-import { getRuleFromAnalysis } from 'Engine/ruleUtils'
 import { EvaluatedRule } from 'Engine/types'
 import React, { useContext, useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { Trans, useTranslation } from 'react-i18next'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router'
 import { DottedName } from 'Rules'
-import { analysisWithDefaultsSelector } from 'Selectors/analyseSelectors'
 import styled from 'styled-components'
 import Animate from 'Ui/animate'
 
@@ -101,24 +99,21 @@ export default function ChômagePartiel() {
 }
 
 function ExplanationSection() {
-	const analysis = useSelector(analysisWithDefaultsSelector)
 	const {
 		i18n: { language },
 		t
 	} = useTranslation()
-	const { palettes } = useContext(ThemeColorsContext)
-	const getRule = getRuleFromAnalysis(analysis)
 
-	const net = getRule('contrat salarié . rémunération . net')
-	const netHabituel = getRule('chômage partiel . revenu net habituel')
-	const totalEntreprise = getRule('contrat salarié . prix du travail')
-	const totalEntrepriseHabituel = getRule(
+	const net = useEvaluation('contrat salarié . rémunération . net')
+	const netHabituel = useEvaluation('chômage partiel . revenu net habituel')
+	const totalEntreprise = useEvaluation('contrat salarié . prix du travail')
+	const totalEntrepriseHabituel = useEvaluation(
 		'chômage partiel . coût employeur habituel'
 	)
 	if (
 		!net?.nodeValue ||
 		!netHabituel?.nodeValue ||
-		totalEntreprise?.nodeValue == null ||
+		(!totalEntreprise?.nodeValue && totalEntreprise?.nodeValue !== 0) ||
 		!totalEntrepriseHabituel?.nodeValue
 	) {
 		return null

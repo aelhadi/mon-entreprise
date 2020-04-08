@@ -9,9 +9,9 @@ import { evaluationError, warning } from './error'
 import { collectDefaults, evaluateNode } from './evaluation'
 import parseRules from './parseRules'
 
-const emptyCache = {
+const emptyCache = () => ({
 	_meta: { contextRule: [] }
-}
+})
 
 type EngineConfig<Names extends string> = {
 	rules: string | Rules<Names> | ParsedRules<Names>
@@ -34,7 +34,7 @@ export default class Engine<Names extends string> {
 	parsedRules: ParsedRules<Names>
 	defaultValues: Simulation['situation']
 	situation: Simulation['situation'] = {}
-	cache: Cache = { ...emptyCache }
+	cache: Cache = emptyCache()
 
 	constructor({ rules, useDefaultValues = true }: EngineConfig<Names>) {
 		this.parsedRules =
@@ -52,7 +52,7 @@ export default class Engine<Names extends string> {
 	}
 
 	private resetCache() {
-		this.cache = { ...emptyCache }
+		this.cache = emptyCache()
 	}
 
 	private evaluateExpression(
@@ -71,6 +71,7 @@ export default class Engine<Names extends string> {
 				)(expression)
 			)
 		)
+
 		if (Object.keys(result.defaultValue?.missingVariable ?? {}).length) {
 			throw new evaluationError(
 				context,
@@ -113,6 +114,11 @@ export default class Engine<Names extends string> {
 	controls() {
 		return evaluateControls(this.cache, this.situationGate, this.parsedRules)
 	}
+
+	inversionFail(): boolean {
+		return !!this.cache._meta.inversionFail
+	}
+
 	// TODO : this should be private
 	getCache(): Cache {
 		return this.cache

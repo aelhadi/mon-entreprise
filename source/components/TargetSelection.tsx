@@ -5,7 +5,7 @@ import RuleLink from 'Components/RuleLink'
 import { ThemeColorsContext } from 'Components/utils/colors'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
 import Engine from 'Engine'
-import { useEvaluation } from 'Engine/Engine'
+import { useEvaluation, useInversionFail } from 'Engine/Engine'
 import { formatCurrency } from 'Engine/format'
 import { EvaluatedRule } from 'Engine/types'
 import { isNil } from 'ramda'
@@ -90,11 +90,15 @@ const Target = ({ dottedName, initialRender }) => {
 	const dispatch = useDispatch()
 	const target = useSelector(parsedRulesSelector)[dottedName]
 	const targetValue = useEvaluation(dottedName, useSelector(targetUnitSelector))
-	if (!targetValue || targetValue.nodeValue === false) {
+	const isSmallTarget = !!target.question !== !!target.formule
+	if (
+		!targetValue ||
+		targetValue.nodeValue === false ||
+		(isSmallTarget && !target.question && !targetValue.nodeValue)
+	) {
 		return null
 	}
 	const isActiveInput = activeInput === target.dottedName
-	const isSmallTarget = !!target.question !== !!target.formule
 
 	return (
 		<li
@@ -197,7 +201,7 @@ function TargetInputOrValue({
 			? Math.round(+target.nodeValue)
 			: undefined
 
-	const blurValue = false
+	const blurValue = useInversionFail() && !isActiveInput
 
 	const onChange = useCallback(
 		evt =>

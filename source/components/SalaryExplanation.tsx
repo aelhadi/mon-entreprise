@@ -2,7 +2,7 @@ import Distribution from 'Components/Distribution'
 import PaySlip from 'Components/PaySlip'
 import StackedBarChart from 'Components/StackedBarChart'
 import { ThemeColorsContext } from 'Components/utils/colors'
-import { useEvaluation } from 'Engine/Engine'
+import { useEvaluation, useInversionFail } from 'Engine/Engine'
 import React, { useContext, useRef } from 'react'
 import emoji from 'react-easy-emoji'
 import { Trans, useTranslation } from 'react-i18next'
@@ -16,6 +16,9 @@ export default function SalaryExplanation() {
 	)
 	const distributionRef = useRef<HTMLDivElement>(null)
 
+	if (useInversionFail()) {
+		return null
+	}
 	return (
 		<Animate.fromTop key={showDistributionFirst.toString()}>
 			{showDistributionFirst ? (

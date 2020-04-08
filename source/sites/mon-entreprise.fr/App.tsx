@@ -1,5 +1,6 @@
 import Route404 from 'Components/Route404'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
+import { Provider as EngineProvider } from 'Engine/Engine'
 import 'iframe-resizer'
 import createRavenMiddleware from 'raven-for-redux'
 import Raven from 'raven-js'
@@ -83,7 +84,9 @@ function InFranceRoute({ basename, language, rules }: InFranceRouteProps) {
 				rules
 			}}
 		>
-			<RouterSwitch />
+			<EngineProvider rules={rules}>
+				<RouterSwitch />
+			</EngineProvider>
 		</Provider>
 	)
 }

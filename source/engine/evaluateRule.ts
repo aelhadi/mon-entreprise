@@ -47,6 +47,7 @@ export const evaluateApplicability = (
 				  ])
 
 	return {
+		...node,
 		nodeValue: isApplicable,
 		missingVariables,
 		...evaluatedAttributes

@@ -1,11 +1,11 @@
 import { goToQuestion, hideControl } from 'Actions/actions'
+import { useControls, useInversionFail } from 'Engine/Engine'
 import { makeJsx } from 'Engine/evaluation'
 import React from 'react'
 import emoji from 'react-easy-emoji'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'Reducers/rootReducer'
-import { analysisWithDefaultsSelector } from 'Selectors/analyseSelectors'
 import animate from 'Ui/animate'
 import './Controls.css'
 import { Markdown } from './utils/markdown'
@@ -16,9 +16,8 @@ export default function Controls() {
 	const foldedSteps = useSelector(
 		(state: RootState) => state.simulation?.foldedSteps
 	)
-	const analysis = useSelector(analysisWithDefaultsSelector)
-	const controls = analysis?.controls
-	const inversionFail = analysis?.cache._meta.inversionFail
+	const controls = useControls()
+	const inversionFail = useInversionFail()
 	const hiddenControls = useSelector(
 		(state: RootState) => state.simulation?.hiddenControls
 	)

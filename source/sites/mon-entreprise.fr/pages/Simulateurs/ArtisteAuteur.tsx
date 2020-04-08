@@ -5,28 +5,21 @@ import SimulateurWarning from 'Components/SimulateurWarning'
 import config from 'Components/simulationConfigs/artiste-auteur.yaml'
 import 'Components/TargetSelection.css'
 import { IsEmbeddedContext } from 'Components/utils/embeddedContext'
+import { useEvaluation } from 'Engine/Engine'
 import { formatValue } from 'Engine/format'
 import RuleInput from 'Engine/RuleInput'
-import { getRuleFromAnalysis } from 'Engine/ruleUtils'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'Reducers/rootReducer'
 import { DottedName } from 'Rules'
 import {
-	analysisWithDefaultsSelector,
 	parsedRulesSelector,
 	ruleAnalysisSelector,
 	situationSelector
 } from 'Selectors/analyseSelectors'
 import styled from 'styled-components'
 import Animate from 'Ui/animate'
-
-export function useRule(dottedName: DottedName) {
-	const analysis = useSelector(analysisWithDefaultsSelector)
-	const getRule = getRuleFromAnalysis(analysis)
-	return getRule(dottedName)
-}
 
 const InitialRenderContext = createContext(false)
 function useInitialRender() {
@@ -149,7 +142,7 @@ function CotisationsResult() {
 	const [display, setDisplay] = useState(false)
 	const { i18n } = useTranslation()
 	const situation = useSelector(situationSelector)
-	const cotisationRule = useRule('artiste-auteur . cotisations')
+	const cotisationRule = useEvaluation('artiste-auteur . cotisations')
 	const value = cotisationRule.nodeValue
 
 	if (Object.keys(situation).length && !display) {
@@ -202,7 +195,7 @@ const branches = [
 function RepartitionCotisations() {
 	const cotisations = branches.map(branch => ({
 		...branch,
-		value: useRule(branch.dottedName).nodeValue as number
+		value: use(branch.dottedName).nodeValue as number
 	}))
 	const maximum = Math.max(...cotisations.map(x => x.value))
 	const total = cotisations.map(x => x.value).reduce((a = 0, b) => a + b)

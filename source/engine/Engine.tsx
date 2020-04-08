@@ -31,9 +31,18 @@ export function Provider({ rules, situation, children }: InputProps) {
 	)
 }
 
+// TODO : assess the need for additional abstractions. Maybe we should just use context
+// to fetch the current Engine instead ?
 export function useEvaluation(expression: string, unit?: string) {
-	const { engine } = useContext(EngineContext)
-	return engine === null ? null : engine.evaluate(expression, unit)
+	return useContext(EngineContext).engine?.evaluate(expression, unit)
+}
+
+export function useEngine() {
+	return useContext(EngineContext).engine
+}
+
+export function useInversionFail() {
+	return useContext(EngineContext).engine?.inversionFail()
 }
 
 export function useError() {
@@ -41,8 +50,7 @@ export function useError() {
 }
 
 export function useControls() {
-	const { engine } = useContext(EngineContext)
-	return engine === null ? null : engine.controls()
+	return useContext(EngineContext).engine?.controls()
 }
 
 export function Evaluation({ expression }) {

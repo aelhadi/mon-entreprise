@@ -7,10 +7,8 @@ import { Trans } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Route, Switch } from 'react-router'
 import { Link, useLocation } from 'react-router-dom'
-import {
-	parsedRulesSelector,
-	situationSelector
-} from 'Selectors/analyseSelectors'
+import { parsedRulesSelector } from 'Selectors/analyseSelectors'
+import Documentation from '../Documentation'
 import ArtisteAuteur from './ArtisteAuteur'
 import AssimiléSalarié from './AssimiléSalarié'
 import AutoEntrepreneur from './AutoEntrepreneur'
@@ -32,7 +30,10 @@ export default function Simulateurs() {
 	}, [setLastState, state])
 
 	const rules = useSelector(parsedRulesSelector)
-	const situation = useSelector(situationSelector)
+	const situation = useSelector(state => ({
+		...state.simulation?.situation,
+		...state.simulation?.config.situation
+	}))
 	return (
 		<>
 			<ScrollToTop key={pathname} />
@@ -87,6 +88,10 @@ export default function Simulateurs() {
 					<Route
 						path={sitePaths.simulateurs['artiste-auteur']}
 						component={ArtisteAuteur}
+					/>
+					<Route
+						path={sitePaths.documentation.index}
+						component={Documentation}
 					/>
 				</Switch>
 			</Provider>

@@ -6,7 +6,7 @@ import { debounce } from '../../utils'
 import './CurrencyInput.css'
 
 type CurrencyInputProps = NumberFormatProps & {
-	value?: string | number
+	value?: string | number | null
 	debounce?: number
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 	currencySymbol?: string
@@ -96,7 +96,7 @@ export default function CurrencyInput({
 					nextValue.current = value.toString().replace('-', '')
 				}}
 				onChange={handleChange}
-				value={currentValue.toString().replace('.', decimalSeparator)}
+				value={currentValue?.toString().replace('.', decimalSeparator)}
 				autoComplete="off"
 			/>
 			{!isCurrencyPrefixed && <>&nbsp;€</>}

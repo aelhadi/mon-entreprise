@@ -1,6 +1,7 @@
 import { ThemeColorsContext } from 'Components/utils/colors'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
 import Value from 'Components/Value'
+import { useEvaluation } from 'Engine/Engine'
 import mecanisms from 'Engine/mecanisms.yaml'
 import { filter, isEmpty } from 'ramda'
 import React, { Suspense, useContext, useState } from 'react'
@@ -12,8 +13,7 @@ import { Link } from 'react-router-dom'
 import {
 	exampleAnalysisSelector,
 	noUserInputSelector,
-	parsedRulesSelector,
-	ruleAnalysisSelector
+	parsedRulesSelector
 } from 'Selectors/analyseSelectors'
 import Animate from 'Ui/animate'
 import { AttachDictionary } from '../AttachDictionary'
@@ -31,9 +31,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 	const currentExample = useSelector(state => state.currentExample)
 	const rules = useSelector(parsedRulesSelector)
 	const valuesToShow = !useSelector(noUserInputSelector)
-	const analysedRule = useSelector(state =>
-		ruleAnalysisSelector(state, { dottedName })
-	)
+	const analysedRule = useEvaluation(dottedName)
 	const analysedExample = useSelector(state =>
 		exampleAnalysisSelector(state, { dottedName })
 	)
@@ -50,6 +48,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 					dottedName.split(' . ').length + 1,
 			rules
 		)
+	console.log(analysedRule)
 	let displayedRule = (analysedExample || analysedRule).explanation
 	const renderToggleSourceButton = () => {
 		return (
@@ -61,7 +60,7 @@ export default AttachDictionary(mecanisms)(function Rule({ dottedName }) {
 				{emoji(
 					viewSource
 						? `📖 ${t('Revenir à la documentation')}`
-						: `✍️ ${t('Voir le code source')}`
+						: `✍️ ${t('Voir la description publicode')}`
 				)}
 			</button>
 		)

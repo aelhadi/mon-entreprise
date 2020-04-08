@@ -1,18 +1,13 @@
 import { goToQuestion, resetSimulation } from 'Actions/actions'
 import Overlay from 'Components/Overlay'
 import Value from 'Components/Value'
-import { getRuleFromAnalysis } from 'Engine/ruleUtils'
+import { useEngine } from 'Engine/Engine'
 import React from 'react'
 import emoji from 'react-easy-emoji'
 import { Trans } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from 'Reducers/rootReducer'
-import { createSelector } from 'reselect'
-import {
-	analysisWithDefaultsSelector,
-	nextStepsSelector
-} from 'Selectors/analyseSelectors'
-import { softCatch } from '../../utils'
+import { nextStepsSelector } from 'Selectors/analyseSelectors'
 import './AnswerList.css'
 
 type AnswerListProps = {
@@ -21,7 +16,18 @@ type AnswerListProps = {
 
 export default function AnswerList({ onClose }: AnswerListProps) {
 	const dispatch = useDispatch()
-	const { folded, next } = useSelector(stepsToRules)
+	const engine = useEngine()
+	const foldedSteps = useSelector(
+		(state: RootState) => state.simulation?.foldedSteps || []
+	)
+
+	const nextSteps = useSelector(nextStepsSelector)
+	if (!engine) {
+		return null
+	}
+	const folded = foldedSteps.map(step => engine.evaluate(step))
+	const next = nextSteps.map(step => engine.evaluate(step))
+
 	return (
 		<Overlay onClose={onClose} className="answer-list">
 			<h2>
@@ -108,17 +114,3 @@ function StepsTable({ rules, onClose }) {
 		</table>
 	)
 }
-
-const stepsToRules = createSelector(
-	(state: RootState) => state.simulation?.foldedSteps || [],
-	nextStepsSelector,
-	analysisWithDefaultsSelector,
-	(folded, nextSteps, analysis) => ({
-		folded: folded
-			.map(softCatch(getRuleFromAnalysis(analysis)))
-			.filter(Boolean),
-		next: nextSteps
-			.map(softCatch(getRuleFromAnalysis(analysis)))
-			.filter(Boolean)
-	})
-)
