@@ -17,6 +17,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { RootState } from 'Reducers/rootReducer'
 import { DottedName } from 'Rules'
 import {
+	parsedRulesSelector,
 	situationSelector,
 	targetUnitSelector
 } from 'Selectors/analyseSelectors'
@@ -87,8 +88,9 @@ export default function TargetSelection({ showPeriodSwitch = true }) {
 const Target = ({ dottedName, initialRender }) => {
 	const activeInput = useSelector((state: RootState) => state.activeTargetInput)
 	const dispatch = useDispatch()
-	const target = useEvaluation(dottedName, useSelector(targetUnitSelector))
-	if (!target || target.nodeValue === false) {
+	const target = useSelector(parsedRulesSelector)[dottedName]
+	const targetValue = useEvaluation(dottedName, useSelector(targetUnitSelector))
+	if (!targetValue || targetValue.nodeValue === false) {
 		return null
 	}
 	const isActiveInput = activeInput === target.dottedName
@@ -119,7 +121,7 @@ const Target = ({ dottedName, initialRender }) => {
 						)}
 						<TargetInputOrValue
 							{...{
-								target,
+								target: targetValue,
 								isActiveInput,
 								isSmallTarget
 							}}
@@ -195,7 +197,7 @@ function TargetInputOrValue({
 			? Math.round(+target.nodeValue)
 			: undefined
 
-	const blurValue = target?.nodeValue == null
+	const blurValue = false
 
 	const onChange = useCallback(
 		evt =>
@@ -209,7 +211,7 @@ function TargetInputOrValue({
 			className="targetInputOrValue"
 			style={blurValue ? { filter: 'blur(3px)' } : {}}
 		>
-			{target.question ? (
+			{target.explanation.question ? (
 				<>
 					{!isActiveInput && <AnimatedTargetValue value={value} />}
 					<CurrencyInput
@@ -223,7 +225,7 @@ function TargetInputOrValue({
 						className={
 							isActiveInput ||
 							isNil(value) ||
-							(target.question && isSmallTarget)
+							(target.explanation.question && isSmallTarget)
 								? 'targetInput'
 								: 'editableTarget'
 						}

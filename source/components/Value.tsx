@@ -50,7 +50,7 @@ export default function Value({
 	let nodeValue = value === undefined ? children : value
 
 	if (
-		(nilValueSymbol !== undefined && nodeValue === 0) ||
+		(nilValueSymbol !== undefined && !nodeValue) ||
 		(nodeValue && Number.isNaN(nodeValue)) ||
 		nodeValue === null
 	)

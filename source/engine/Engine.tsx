@@ -40,6 +40,11 @@ export function useError() {
 	return useContext(EngineContext).error
 }
 
+export function useControls() {
+	const { engine } = useContext(EngineContext)
+	return engine === null ? null : engine.controls()
+}
+
 export function Evaluation({ expression }) {
 	const value = useEvaluation(expression)
 	return value === null ? null : <Value {...value} />

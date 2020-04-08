@@ -1,38 +1,48 @@
 import { ThemeColorsContext } from 'Components/utils/colors'
 import useDisplayOnIntersecting from 'Components/utils/useDisplayOnIntersecting'
 import Value from 'Components/Value'
+import { useEvaluation } from 'Engine/Engine'
+import { add, max } from 'ramda'
 import React, { useContext } from 'react'
 import emoji from 'react-easy-emoji'
 import { useSelector } from 'react-redux'
 import { animated, config, useSpring } from 'react-spring'
 import { DottedName } from 'Rules'
-import { parsedRulesSelector } from 'Selectors/analyseSelectors'
-import répartitionSelector from 'Selectors/repartitionSelectors'
+import {
+	parsedRulesSelector,
+	targetUnitSelector
+} from 'Selectors/analyseSelectors'
 import { isIE } from '../utils'
 import './Distribution.css'
 import './PaySlip'
+import { getCotisationsBySection } from './PaySlip'
 import RuleLink from './RuleLink'
 
 export default function Distribution() {
-	const distribution = useSelector(répartitionSelector) as any
-
-	if (!Object.values(distribution).length) {
-		return null
-	}
+	const targetUnit = useSelector(targetUnitSelector)
+	const distribution = getCotisationsBySection(useSelector(parsedRulesSelector))
+		.map(([section, cotisations]) => [
+			section,
+			cotisations
+				.map(c => useEvaluation(c, targetUnit))
+				.reduce((acc, evaluation) => acc + (evaluation?.nodeValue || 0), 0)
+		])
+		.filter(([, value]) => value > 0)
+		.sort(([, a], [, b]) => b - a) as Array<[DottedName, number]>
+	const maximum = distribution.map(([, value]) => value).reduce(max, 0)
+	const total = distribution.map(([, value]) => value).reduce(add, 0)
 
 	return (
 		<>
 			<div className="distribution-chart__container">
-				{distribution.répartition.map(
-					([brancheDottedName, { partPatronale, partSalariale }]) => (
-						<DistributionBranch
-							key={brancheDottedName}
-							dottedName={brancheDottedName}
-							value={partPatronale + partSalariale}
-							distribution={distribution}
-						/>
-					)
-				)}
+				{distribution.map(([sectionName, value]) => (
+					<DistributionBranch
+						key={sectionName}
+						dottedName={sectionName}
+						value={value}
+						distribution={{ maximum, total }}
+					/>
+				))}
 			</div>
 		</>
 	)
