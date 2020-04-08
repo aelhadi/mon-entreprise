@@ -5,8 +5,9 @@ import RuleLink from 'Components/RuleLink'
 import { ThemeColorsContext } from 'Components/utils/colors'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
 import Engine from 'Engine'
+import { useEvaluation } from 'Engine/Engine'
 import { formatCurrency } from 'Engine/format'
-import { ParsedRule } from 'Engine/types'
+import { EvaluatedRule } from 'Engine/types'
 import { isNil } from 'ramda'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import emoji from 'react-easy-emoji'
@@ -16,10 +17,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { RootState } from 'Reducers/rootReducer'
 import { DottedName } from 'Rules'
 import {
-	analysisWithDefaultsSelector,
 	situationSelector,
-	targetUnitSelector,
-	useTarget
+	targetUnitSelector
 } from 'Selectors/analyseSelectors'
 import Animate from 'Ui/animate'
 import AnimatedTargetValue from 'Ui/AnimatedTargetValue'
@@ -28,24 +27,10 @@ import './TargetSelection.css'
 
 export default function TargetSelection({ showPeriodSwitch = true }) {
 	const [initialRender, setInitialRender] = useState(true)
-	const analysis = useSelector(analysisWithDefaultsSelector)
 	const objectifs = useSelector(
 		(state: RootState) => state.simulation?.config.objectifs || []
 	)
-	const secondaryObjectives = useSelector(
-		(state: RootState) =>
-			state.simulation?.config['objectifs secondaires'] || []
-	)
-	const situation = useSelector(situationSelector)
-	const dispatch = useDispatch()
 	const colors = useContext(ThemeColorsContext)
-
-	const targets =
-		analysis?.targets.filter(
-			t =>
-				!secondaryObjectives.includes(t.dottedName) &&
-				t.dottedName !== 'contrat salarié . aides employeur'
-		) || []
 
 	useEffect(() => {
 		setInitialRender(false)
@@ -57,7 +42,7 @@ export default function TargetSelection({ showPeriodSwitch = true }) {
 			{((typeof objectifs[0] === 'string'
 				? [{ objectifs }]
 				: objectifs) as any).map(
-				({ icône, objectifs: groupTargets, nom }, index) => (
+				({ icône, objectifs: targets, nom }, index) => (
 					<React.Fragment key={nom || '0'}>
 						<div style={{ display: 'flex', alignItems: 'end' }}>
 							<div style={{ flex: 1 }}>
@@ -81,14 +66,16 @@ export default function TargetSelection({ showPeriodSwitch = true }) {
 								)`
 							}}
 						>
-							<Targets
-								{...{
-									targets: targets.filter(({ dottedName }) =>
-										groupTargets.includes(dottedName)
-									),
-									initialRender
-								}}
-							/>
+							<ul className="targets">
+								{' '}
+								{targets.map(target => (
+									<Target
+										key={target}
+										dottedName={target}
+										initialRender={initialRender}
+									/>
+								))}
+							</ul>
 						</section>
 					</React.Fragment>
 				)
@@ -97,35 +84,16 @@ export default function TargetSelection({ showPeriodSwitch = true }) {
 	)
 }
 
-let Targets = ({ targets, initialRender }) => (
-	<div>
-		<ul className="targets">
-			{targets
-				.map(target => target.explanation || target)
-				.filter(target => {
-					return (
-						target.nodeValue !== false && (target.question || target.nodeValue)
-					)
-				})
-				.map(target => (
-					<Target
-						key={target.dottedName}
-						initialRender={initialRender}
-						{...{
-							target
-						}}
-					/>
-				))}
-		</ul>
-	</div>
-)
-
-const Target = ({ target, initialRender }) => {
+const Target = ({ dottedName, initialRender }) => {
 	const activeInput = useSelector((state: RootState) => state.activeTargetInput)
 	const dispatch = useDispatch()
-
+	const target = useEvaluation(dottedName, useSelector(targetUnitSelector))
+	if (!target || target.nodeValue === false) {
+		return null
+	}
 	const isActiveInput = activeInput === target.dottedName
 	const isSmallTarget = !!target.question !== !!target.formule
+
 	return (
 		<li
 			key={target.name}
@@ -200,7 +168,7 @@ let Header = ({ target }) => {
 }
 
 type TargetInputOrValueProps = {
-	target: ParsedRule<DottedName>
+	target: EvaluatedRule<DottedName>
 	isActiveInput: boolean
 	isSmallTarget: boolean
 }
@@ -214,9 +182,6 @@ function TargetInputOrValue({
 	const colors = useContext(ThemeColorsContext)
 	const dispatch = useDispatch()
 	const situationValue = useSelector(situationSelector)[target.dottedName]
-	const targetWithValue = useTarget(target.dottedName)
-	const inversionFail = useSelector(analysisWithDefaultsSelector)?.cache._meta
-		.inversionFail
 	const targetUnit = useSelector(targetUnitSelector)
 	const value =
 		typeof situationValue === 'string'
@@ -226,10 +191,11 @@ function TargetInputOrValue({
 			  )
 			: situationValue != null
 			? situationValue
-			: targetWithValue?.nodeValue != null && !inversionFail
-			? Math.round(+targetWithValue.nodeValue)
+			: target?.nodeValue != null
+			? Math.round(+target.nodeValue)
 			: undefined
-	const blurValue = inversionFail && !isActiveInput
+
+	const blurValue = target?.nodeValue == null
 
 	const onChange = useCallback(
 		evt =>
@@ -285,8 +251,10 @@ function TargetInputOrValue({
 	)
 }
 function TitreRestaurant() {
-	const titresRestaurant = useTarget(
-		'contrat salarié . frais professionnels . titres-restaurant . montant'
+	const targetUnit = useSelector(targetUnitSelector)
+	const titresRestaurant = useEvaluation(
+		'contrat salarié . frais professionnels . titres-restaurant . montant',
+		targetUnit
 	)
 	const { language } = useTranslation().i18n
 	if (!titresRestaurant?.nodeValue) return null
@@ -305,7 +273,8 @@ function TitreRestaurant() {
 	)
 }
 function AidesGlimpse() {
-	const aides = useTarget('contrat salarié . aides employeur')
+	const targetUnit = useSelector(targetUnitSelector)
+	const aides = useEvaluation('contrat salarié . aides employeur', targetUnit)
 	const { language } = useTranslation().i18n
 
 	// Dans le cas où il n'y a qu'une seule aide à l'embauche qui s'applique, nous

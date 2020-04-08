@@ -1,10 +1,16 @@
 import { usePersistingState } from 'Components/utils/persistState'
 import { ScrollToTop } from 'Components/utils/Scroll'
 import { SitePathsContext } from 'Components/utils/withSitePaths'
+import { Provider } from 'Engine/Engine'
 import React, { useContext, useEffect } from 'react'
 import { Trans } from 'react-i18next'
+import { useSelector } from 'react-redux'
 import { Route, Switch } from 'react-router'
 import { Link, useLocation } from 'react-router-dom'
+import {
+	parsedRulesSelector,
+	situationSelector
+} from 'Selectors/analyseSelectors'
 import ArtisteAuteur from './ArtisteAuteur'
 import AssimiléSalarié from './AssimiléSalarié'
 import AutoEntrepreneur from './AutoEntrepreneur'
@@ -24,6 +30,9 @@ export default function Simulateurs() {
 			setLastState(state)
 		}
 	}, [setLastState, state])
+
+	const rules = useSelector(parsedRulesSelector)
+	const situation = useSelector(situationSelector)
 	return (
 		<>
 			<ScrollToTop key={pathname} />
@@ -55,30 +64,32 @@ export default function Simulateurs() {
 					)}
 				</div>
 			)}
-			<Switch>
-				<Route exact path={sitePaths.simulateurs.index} component={Home} />
-				<Route path={sitePaths.simulateurs.salarié} component={Salarié} />
-				<Route
-					path={sitePaths.simulateurs.comparaison}
-					component={SchemeComparaison}
-				/>
-				<Route
-					path={sitePaths.simulateurs['assimilé-salarié']}
-					component={AssimiléSalarié}
-				/>
-				<Route
-					path={sitePaths.simulateurs.indépendant}
-					component={Indépendant}
-				/>
-				<Route
-					path={sitePaths.simulateurs['auto-entrepreneur']}
-					component={AutoEntrepreneur}
-				/>
-				<Route
-					path={sitePaths.simulateurs['artiste-auteur']}
-					component={ArtisteAuteur}
-				/>
-			</Switch>
+			<Provider rules={rules} situation={situation}>
+				<Switch>
+					<Route exact path={sitePaths.simulateurs.index} component={Home} />
+					<Route path={sitePaths.simulateurs.salarié} component={Salarié} />
+					<Route
+						path={sitePaths.simulateurs.comparaison}
+						component={SchemeComparaison}
+					/>
+					<Route
+						path={sitePaths.simulateurs['assimilé-salarié']}
+						component={AssimiléSalarié}
+					/>
+					<Route
+						path={sitePaths.simulateurs.indépendant}
+						component={Indépendant}
+					/>
+					<Route
+						path={sitePaths.simulateurs['auto-entrepreneur']}
+						component={AutoEntrepreneur}
+					/>
+					<Route
+						path={sitePaths.simulateurs['artiste-auteur']}
+						component={ArtisteAuteur}
+					/>
+				</Switch>
+			</Provider>
 		</>
 	)
 }

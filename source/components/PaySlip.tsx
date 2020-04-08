@@ -1,13 +1,10 @@
 import { ThemeColorsContext } from 'Components/utils/colors'
 import Value from 'Components/Value'
-import { getRuleFromAnalysis } from 'Engine/ruleUtils'
+import { useEvaluation } from 'Engine/Engine'
 import React, { Fragment, useContext } from 'react'
 import { Trans } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import {
-	analysisWithDefaultsSelector,
-	parsedRulesSelector
-} from 'Selectors/analyseSelectors'
+import { parsedRulesSelector } from 'Selectors/analyseSelectors'
 import { analysisToCotisationsSelector } from 'Selectors/ficheDePaieSelectors'
 import './PaySlip.css'
 import { Line, SalaireBrutSection, SalaireNetSection } from './PaySlipSections'
@@ -16,11 +13,9 @@ import RuleLink from './RuleLink'
 export default function PaySlip() {
 	const { lightestColor } = useContext(ThemeColorsContext)
 	const cotisations = useSelector(analysisToCotisationsSelector)
-	const analysis = useSelector(analysisWithDefaultsSelector)
 	const parsedRules = useSelector(parsedRulesSelector)
-	let getRule = getRuleFromAnalysis(analysis)
 
-	const heuresSupplémentaires = getRule(
+	const heuresSupplémentaires = useEvaluation(
 		'contrat salarié . temps de travail . heures supplémentaires'
 	)
 
@@ -38,7 +33,7 @@ export default function PaySlip() {
 		>
 			<div className="payslip__salarySection">
 				<Line
-					rule={getRule('contrat salarié . temps de travail')}
+					rule={useEvaluation('contrat salarié . temps de travail')}
 					unit="heures/mois"
 					maximumFractionDigits={1}
 				/>
@@ -51,7 +46,7 @@ export default function PaySlip() {
 				)}
 			</div>
 
-			<SalaireBrutSection getRule={getRule} />
+			<SalaireBrutSection />
 			{/* Section cotisations */}
 			<div className="payslip__cotisationsSection">
 				<h4>

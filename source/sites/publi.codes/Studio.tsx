@@ -1,5 +1,5 @@
 import { ControlledEditor } from '@monaco-editor/react'
-import Engine from 'Engine/react'
+import * as Engine from 'Engine/Engine'
 import { safeLoad } from 'js-yaml'
 import { last } from 'ramda'
 import React, { useCallback, useEffect, useState } from 'react'

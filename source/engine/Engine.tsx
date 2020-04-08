@@ -31,9 +31,9 @@ export function Provider({ rules, situation, children }: InputProps) {
 	)
 }
 
-export function useEvaluation(expression: string) {
+export function useEvaluation(expression: string, unit?: string) {
 	const { engine } = useContext(EngineContext)
-	return engine === null ? null : engine.evaluate(expression)
+	return engine === null ? null : engine.evaluate(expression, unit)
 }
 
 export function useError() {
@@ -43,11 +43,4 @@ export function useError() {
 export function Evaluation({ expression }) {
 	const value = useEvaluation(expression)
 	return value === null ? null : <Value {...value} />
-}
-
-export default {
-	Provider,
-	useEvaluation,
-	useError,
-	Evaluation
 }
